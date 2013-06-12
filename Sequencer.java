@@ -5,6 +5,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
+import javax.swing.JComboBox;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -33,6 +34,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
         count = 0;
         stf = new Staff();
+       // count = stf.getLength();
 	topLabel = new JPanel();
 	topLabel.setSize(100,100);
         JLabel bpmLab = new JLabel("BPM");
@@ -77,7 +79,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
     public void actionPerformed(ActionEvent e){
         stf.light(count);
-        if (count == stf.getLength()-1) count = 0;
+        if (count >= stf.getLength()-1) count = 0;
         else count++;
         if (bpm!= Integer.parseInt(BPM.getValue().toString())){
             bpm = Integer.parseInt(BPM.getValue().toString());
@@ -93,8 +95,13 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     }
 
     public void keyPressed(KeyEvent k){
-        if (k.getKeyCode() == KeyEvent.VK_SPACE)
-            count = 0;
+        if (k.getKeyCode() == KeyEvent.VK_SPACE){
+            time.stop();
+            stf.light(0);
+            count=1;
+            time.setDelay((int)((60000.0/(bpm*2.0))*(.01*(groove))));
+            time.start();
+        }
     }
 
     public void keyReleased(KeyEvent k){
