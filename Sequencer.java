@@ -16,6 +16,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 public class Sequencer extends JFrame implements ActionListener,KeyListener,MouseListener{
 
@@ -23,6 +24,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     JSpinner BPM,Groove;
     JTextField beatCt, basDur;
     JPanel topLabel,btmProperties;
+    JComboBox fileChoose;
     Timer time;
     int timeSpacing,count,bpm,groove;
 
@@ -49,6 +51,9 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         basDur = new JTextField("4");
         btmProperties = new JPanel();
 
+        File temp = new File("Samples");
+
+        fileChoose = new JComboBox(temp.listFiles());
         bpm = Integer.parseInt(BPM.getValue().toString());
         time=new Timer(60000/480,this);
         time.start();
@@ -63,6 +68,8 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 	topLabel.add(beatCt);
         topLabel.add(slash);
         topLabel.add(basDur);
+
+        btmProperties.add(fileChoose);
 
         this.addKeyListener(this);
         this.addMouseListener(this);
