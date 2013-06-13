@@ -25,10 +25,10 @@ class Staff extends JPanel implements ActionListener{
         this.setBackground(Color.gray);
         rowList = new LinkedList<Row>();
 
-        rowList.add(new Row("kick.wav",16));
-        rowList.add(new Row("snare.wav",16));
-        rowList.add(new Row("hihat.wav",16));
-        rowList.add(new Row("openhat.wav",16));
+        rowList.add(new Row("Samples/kick.wav",16));
+//        rowList.add(new Row("snare.wav",16));
+//        rowList.add(new Row("hihat.wav",16));
+//        rowList.add(new Row("openhat.wav",16));
 
         this.setPreferredSize(new Dimension(400,400));
         this.setSize(400,400);
@@ -46,6 +46,13 @@ class Staff extends JPanel implements ActionListener{
         for (int i = 0; i < rowList.size(); i++){
             rowList.get(i).light(index);
         }
+    }
+
+    public void addSound(String fn){
+        rowList.add(new Row(fn,16));
+        this.add(rowList.get(rowList.size()-1));
+        this.revalidate();
+        //this.repaint();
     }
   
     public int getLength(){

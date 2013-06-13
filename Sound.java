@@ -9,7 +9,7 @@ class Sound {
 
     public Sound (String fileName) {
         try {
-            File file = new File("Samples/"+fileName);
+            File file = new File(fileName);
             ac = Applet.newAudioClip(file.toURI().toURL());
         }
         catch (MalformedURLException mue){

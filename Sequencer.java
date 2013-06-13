@@ -1,6 +1,7 @@
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JButton;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -25,6 +26,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     JTextField beatCt, basDur;
     JPanel topLabel,btmProperties;
     JComboBox fileChoose;
+    JButton loadSound;
     Timer time;
     int timeSpacing,count,bpm,groove;
 
@@ -51,6 +53,12 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         basDur = new JTextField("4");
         btmProperties = new JPanel();
 
+        loadSound = new JButton("Load Sound");
+        loadSound.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent E){
+                stf.addSound(fileChoose.getSelectedItem().toString());
+            }
+        });
         File temp = new File("Samples");
 
         fileChoose = new JComboBox(temp.listFiles());
@@ -69,8 +77,9 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         topLabel.add(slash);
         topLabel.add(basDur);
 
-        btmProperties.add(fileChoose);
 
+        btmProperties.add(fileChoose);
+        btmProperties.add(loadSound);
         this.addKeyListener(this);
         this.addMouseListener(this);
         this.setTitle("DRM SEQ");
