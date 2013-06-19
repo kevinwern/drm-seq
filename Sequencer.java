@@ -1,3 +1,4 @@
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -18,17 +19,21 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.LinkedList;
 
 public class Sequencer extends JFrame implements ActionListener,KeyListener,MouseListener{
 
-    Staff stf;
+    LinkedList<Staff> staffList;
     JSpinner BPM,Groove;
     JTextField beatCt, basDur;
     JPanel topLabel,btmProperties;
     JComboBox fileChoose;
     JButton loadSound;
+    JScrollPane scrollWindow;
     Timer time;
-    int timeSpacing,count,bpm,groove;
+    Presets pre;
+    int timeSpacing,count,bpm,groove,print,playSelect, staffSelect;
+
 
     public Sequencer(){
         Initialize();
@@ -37,8 +42,13 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     public void Initialize(){
 
         count = 0;
-        stf = new Staff();
-       // count = stf.getLength();
+        playSelect=0;
+        staffSelect=0;
+        staffList = new LinkedList<Staff>();
+
+        for (int i = 0; i<8;i++){
+            staffList.add(new Staff());
+        }
 	topLabel = new JPanel();
 	topLabel.setSize(100,100);
         JLabel bpmLab = new JLabel("BPM");
@@ -52,11 +62,14 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         beatCt = new JTextField("4");
         basDur = new JTextField("4");
         btmProperties = new JPanel();
+        
+        pre = new Presets();
+        JButton j = new JButton();
 
         loadSound = new JButton("Load Sound");
         loadSound.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
-                stf.addSound(fileChoose.getSelectedItem().toString());
+                staffList.get(staffSelect).addSound(fileChoose.getSelectedItem().toString());
             }
         });
         File temp = new File("Samples");
@@ -66,7 +79,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         time=new Timer(60000/480,this);
         time.start();
         
-        JScrollPane scrollWindow = new JScrollPane(stf);
+        scrollWindow = new JScrollPane(staffList.get(0));
 	scrollWindow.setPreferredSize(new Dimension(200,200));
         topLabel.add(bpmLab);
 	topLabel.add(BPM);
@@ -84,25 +97,34 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         this.addMouseListener(this);
         this.setTitle("DRM SEQ");
         this.setLayout(new BorderLayout());
-        this.add(stf,BorderLayout.CENTER);
+        this.add(staffList.get(0),BorderLayout.CENTER);
 	this.add(topLabel,BorderLayout.NORTH);
         this.add(btmProperties,BorderLayout.SOUTH);
+        this.add(pre,BorderLayout.EAST);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
         this.setVisible(true);
-        this.setFocusable(true);
-    }
+        this.setFocusable(true);    
+}
 
     public void actionPerformed(ActionEvent e){
-        stf.light(count);
-        if (count >= stf.getLength()-1) count = 0;
-        else count++;
         if (bpm!= Integer.parseInt(BPM.getValue().toString())){
             bpm = Integer.parseInt(BPM.getValue().toString());
         }
         if (groove != Integer.parseInt(Groove.getValue().toString())){
             groove = Integer.parseInt(Groove.getValue().toString());
         }
+        if (playSelect != pre.getSelection()-1){
+            this.remove(staffList.get(playSelect));
+            playSelect = pre.getSelection()-1;
+            staffSelect = playSelect;
+            this.add(staffList.get(playSelect),BorderLayout.CENTER);
+            ((JComponent) this.getContentPane()).revalidate();
+        }
+        
+        staffList.get(playSelect).light(count);
+        if (count >= staffList.get(playSelect).getLength()-1) count = 0;
+        else count++;
         if (count % 2 == 0){
             time.setDelay((int)((60000.0/(bpm*2.0))*(.01*groove)));
         }
@@ -113,7 +135,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     public void keyPressed(KeyEvent k){
         if (k.getKeyCode() == KeyEvent.VK_SPACE){
             time.stop();
-            stf.light(0);
+            staffList.get(playSelect).light(0);
             count=1;
             time.setDelay((int)((60000.0/(bpm*2.0))*(.01*(groove))));
             time.start();
@@ -130,6 +152,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
     public void mousePressed(MouseEvent e){
         requestFocus();
+        System.out.println("czech");
     }
 
     public void mouseReleased(MouseEvent e){
