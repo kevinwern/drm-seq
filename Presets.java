@@ -30,7 +30,6 @@ class Presets extends JPanel implements ActionListener{
     }
     public void actionPerformed(ActionEvent e){
         int newId = ((Preset) e.getSource()).getId();
-        System.out.println(newId);
         selection = newId;
     }
 

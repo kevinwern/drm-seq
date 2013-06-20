@@ -11,6 +11,7 @@ import javax.swing.JComboBox;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.CardLayout;
 import javax.swing.Timer;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -26,7 +27,8 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     LinkedList<Staff> staffList;
     JSpinner BPM,Groove;
     JTextField beatCt, basDur;
-    JPanel topLabel,btmProperties;
+    CardLayout cardMan;
+    JPanel center, topLabel,btmProperties;
     JComboBox fileChoose;
     JButton loadSound;
     JScrollPane scrollWindow;
@@ -79,8 +81,13 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         time=new Timer(60000/480,this);
         time.start();
         
-        scrollWindow = new JScrollPane(staffList.get(0));
-	scrollWindow.setPreferredSize(new Dimension(200,200));
+        cardMan = new CardLayout();
+        center = new JPanel(cardMan);
+        center.setPreferredSize(new Dimension(400,400));
+        for (int i = 0; i <8; i++){
+            center.add(staffList.get(i),""+i);
+        }
+//	center.setPreferredSize(new Dimension(200,200));
         topLabel.add(bpmLab);
 	topLabel.add(BPM);
         topLabel.add(grooveLab);
@@ -97,7 +104,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         this.addMouseListener(this);
         this.setTitle("DRM SEQ");
         this.setLayout(new BorderLayout());
-        this.add(staffList.get(0),BorderLayout.CENTER);
+        this.add(center,BorderLayout.CENTER);
 	this.add(topLabel,BorderLayout.NORTH);
         this.add(btmProperties,BorderLayout.SOUTH);
         this.add(pre,BorderLayout.EAST);
@@ -115,11 +122,9 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             groove = Integer.parseInt(Groove.getValue().toString());
         }
         if (playSelect != pre.getSelection()-1){
-            this.remove(staffList.get(playSelect));
             playSelect = pre.getSelection()-1;
             staffSelect = playSelect;
-            this.add(staffList.get(playSelect),BorderLayout.CENTER);
-            ((JComponent) this.getContentPane()).revalidate();
+            cardMan.show(center,playSelect+"");
         }
         
         staffList.get(playSelect).light(count);
@@ -152,7 +157,6 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
     public void mousePressed(MouseEvent e){
         requestFocus();
-        System.out.println("czech");
     }
 
     public void mouseReleased(MouseEvent e){
