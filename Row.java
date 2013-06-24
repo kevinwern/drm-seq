@@ -54,15 +54,19 @@ class Row extends JPanel  {
     }
 
     public void light(int index){
+        cells.get(index).highlight();
         if (index==0){
-            cells.get(index).highlight();
             cells.get(numCells-1).reset();
         }
         else{
-            cells.get(index).highlight();
             cells.get(index-1).reset();
         }
         if (cells.get(index).isLit()) play();
+    }
+
+    void reset(){
+        for (int i = 0; i<numCells; i++)
+        cells.get(i).reset();
     }
 
     public void play(){

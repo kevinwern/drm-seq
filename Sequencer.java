@@ -1,4 +1,3 @@
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -121,10 +120,9 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         if (groove != Integer.parseInt(Groove.getValue().toString())){
             groove = Integer.parseInt(Groove.getValue().toString());
         }
-        if (playSelect != pre.getSelection()-1){
-            playSelect = pre.getSelection()-1;
-            staffSelect = playSelect;
-            cardMan.show(center,playSelect+"");
+        if (staffSelect != pre.getSelection()-1){
+            staffSelect = pre.getSelection()-1;
+            cardMan.show(center,staffSelect+"");
         }
         
         staffList.get(playSelect).light(count);
@@ -138,12 +136,31 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     }
 
     public void keyPressed(KeyEvent k){
+        staffList.get(playSelect).reset();
         if (k.getKeyCode() == KeyEvent.VK_SPACE){
             time.stop();
             staffList.get(playSelect).light(0);
             count=1;
             time.setDelay((int)((60000.0/(bpm*2.0))*(.01*(groove))));
             time.start();
+        }
+        
+        if (k.getKeyCode() == KeyEvent.VK_8)
+            playSelect = 7;
+        if (k.getKeyCode() == KeyEvent.VK_7)
+            playSelect = 6;
+        if (k.getKeyCode() == KeyEvent.VK_6)
+            playSelect = 5;
+        if (k.getKeyCode() == KeyEvent.VK_5)
+            playSelect = 4;
+        if (k.getKeyCode() == KeyEvent.VK_4)
+            playSelect = 3;
+        if (k.getKeyCode() == KeyEvent.VK_3)
+            playSelect = 2;
+        if (k.getKeyCode() == KeyEvent.VK_2)
+            playSelect = 1;
+        if (k.getKeyCode() == KeyEvent.VK_1){
+            playSelect = 0;
         }
     }
 

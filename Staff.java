@@ -48,6 +48,12 @@ class Staff extends JPanel implements ActionListener{
         }
     }
 
+    public void reset(){
+        for (int i = 0; i < rowList.size(); i++){
+            rowList.get(i).reset();
+        }
+    }   
+
     public void addSound(String fn){
         rowList.add(new Row(fn,16));
         this.add(rowList.get(rowList.size()-1));
