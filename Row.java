@@ -34,14 +34,19 @@ class Row extends JPanel  {
     public void setLength(int length) {
         if (length>numCells){
             for (int i=cells.size();i<length; i++){
-                cells.add(new Cell());
+                Cell addCell = new Cell();
+                this.add(addCell);
+                cells.add(addCell);
             }
         }
         else if (length<numCells) {
-            for (int i=cells.size();i<length; i++){
+            for (int i=cells.size();i>length; i--){
+                this.remove(cells.get(cells.size()-1));
                 cells.remove(cells.size()-1);
             }
         }
+        this.revalidate();
+        this.repaint();
         numCells = length;
     }
 
