@@ -15,9 +15,11 @@ class Row extends JPanel implements ActionListener{
     JButton muteButton,soloButton;
     boolean isMuted=false, isSoloed=false;
     Sound sound;
+    String file;
 
     public Row(String filename, int length) {
         
+        file = filename;
         cells = new LinkedList<Cell>();
         for (int i = 0; i<length; i++){
             cells.add(new Cell());
@@ -128,5 +130,22 @@ class Row extends JPanel implements ActionListener{
 
     public boolean isSoloed(){
         return isSoloed;
+    }
+
+    public String dumpString(){
+        String dumpedString = "Samples/"+file;
+        if (isMuted) dumpedString += " M";
+        else dumpedString += " m";
+
+        if (isSoloed) dumpedString += "S ";
+        else dumpedString += "s ";
+ 
+       for (int i = 0; i<numCells; i++){
+           if (cells.get(i).isLit())
+               dumpedString +="1";
+           else
+               dumpedString +="0";
+       }
+        return dumpedString; 
     }
 }

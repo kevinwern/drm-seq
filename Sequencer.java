@@ -19,6 +19,9 @@ software mixers.                                                                
 
 //Sequencer.java: contains the main window and options, as well as the basic "tree" of how things work
 
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -28,7 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JComboBox;
-import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -101,7 +104,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             }
         });
 
-        JButton playButton = new JButton(new ImageIcon("stop.png"));
+        ImageButton playButton = new ImageButton("play.png");
         playButton.setPreferredSize(new Dimension(20,20));
         playButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
@@ -109,7 +112,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             }
         });
 
-        JButton pauseButton = new JButton("||");
+        ImageButton pauseButton = new ImageButton("pause.png");
         pauseButton.setPreferredSize(new Dimension(20,20));
         pauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
@@ -118,7 +121,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         });
 
 
-        JButton stopButton = new JButton("S");
+        ImageButton stopButton = new ImageButton("stop.png");
         stopButton.setPreferredSize(new Dimension(20,20));
         stopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
@@ -143,6 +146,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         }
 
         menuBar = new FileMenu();
+        menuBar.addListeners(this);
 
         topLabel.add(bpmLab);
 	topLabel.add(BPM);
@@ -185,6 +189,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     }
 
     public void actionPerformed(ActionEvent e){
+        if(e.getSource().equals(time)){
         if (bpm!= Integer.parseInt(BPM.getValue().toString())){
             bpm = Integer.parseInt(BPM.getValue().toString());
         }
@@ -234,7 +239,74 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             else
                  time.setDelay((int)((60000.0/(bpm*3))*(.01*(100-groove))));
         }
+        }
+
+        else if (e.getActionCommand().equals("about")){
+            showDialog();
+        }
+        else if (e.getActionCommand().equals("save")){
+            saveFile();
+        }
+        else if (e.getActionCommand().equals("open")){
+            openFile();
+        }
     }
+
+    public void showDialog(){
+        JOptionPane.showMessageDialog(this, 
+        "Created January and July 2013\n\n"+
+        "Some quick controls:\n" +
+        "Spacebar:\t\t\tStart from first beat.\n"+
+        "+/-:\t\t\tIncrease/Decrease BPM\n" +
+        "Right Click (on any Row): Delete that row\n"+
+        "1-8:                      Play corresponding bank from current point in measure\n\n"+
+        "Other helpful button info:\n"+
+        "Mute (M):                 Mute the given track\n"+
+        "Solo (S):                 Play only the soloed track(s)\n"+
+        "Play/Pause/Stop:          Seek through loop as desired\n",
+        "About DRM-SEQ",
+        JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void saveFile(){
+        JFileChooser saveDialog = new JFileChooser();
+        FileFilter filter = new FileNameExtensionFilter("DRM file", "drm");
+        saveDialog.addChoosableFileFilter(filter);
+        int result=saveDialog.showSaveDialog(this);
+        if(result == JFileChooser.APPROVE_OPTION) {
+            System.out.println("You chose to open this file: " +
+            saveDialog.getSelectedFile().getName());
+        }
+
+        String toWrite = "";
+        for (int i = 0; i<staffList.size(); i++){
+            toWrite+=i+"\n"+staffList.get(i).dumpString();
+        }
+        System.out.println(toWrite);
+    }
+
+    public void writeFile(File f){
+        if (!f.exists()){
+        
+        }
+
+        else{
+            JOptionPane.showMessageDialog(this,"File already exists. Stopped writing.", "File Exists",JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void openFile(){
+        JFileChooser openDialog = new JFileChooser();
+        FileFilter filter = new FileNameExtensionFilter("DRM file", "drm");
+        openDialog.addChoosableFileFilter(filter);
+        int result = openDialog.showOpenDialog(this);
+        if(result == JFileChooser.APPROVE_OPTION) {
+            System.out.println("You chose to open this file: " +
+            openDialog.getSelectedFile().getName());
+        }
+    }
+
+
 
     public void keyPressed(KeyEvent k){
 

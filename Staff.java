@@ -3,15 +3,16 @@ import java.awt.Dimension;
 import java.util.LinkedList;
 import java.awt.Color;
 import javax.swing.BoxLayout;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.SwingUtilities;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 import java.applet.AudioClip;
 import java.applet.Applet;
 import java.io.File;
 import javax.swing.Timer;
 import java.net.MalformedURLException;
 
-class Staff extends JPanel implements ActionListener{
+class Staff extends JPanel implements MouseListener{
 
     int vert,horiz,count;
     Timer time;
@@ -28,16 +29,52 @@ class Staff extends JPanel implements ActionListener{
 
         for (int i = 0; i<rowList.size(); i++){
             this.add(rowList.get(i));
+            rowList.get(i).addMouseListener(this);
         }
     }
     
-    public void actionPerformed(ActionEvent e){
-    
+    public void mousePressed(MouseEvent e){
+        if (SwingUtilities.isRightMouseButton(e)){
+            this.remove((Row) e.getSource());
+            rowList.remove(e.getSource());
+            this.revalidate();
+            this.repaint();
+        }
+    }
+
+    public void mouseReleased(MouseEvent e){
+
+    }
+
+    public void mouseEntered(MouseEvent e){
+    }
+
+    public void mouseExited(MouseEvent e){
+
+    }
+    public void mouseClicked(MouseEvent e){
+
     }
     
     public void light(int index){
+        boolean soloOn = false;
         for (int i = 0; i < rowList.size(); i++){
-            rowList.get(i).light(index);
+            if(rowList.get(i).isSoloed()){
+                soloOn = true;
+                for (int j = 0; j < rowList.size(); j++){
+                    if (rowList.get(j).isSoloed())
+                        rowList.get(j).light(index);
+                    else
+                        rowList.get(j).reset();
+                 }
+                break;
+            }
+        }
+        if(!soloOn){
+            for (int i = 0; i < rowList.size(); i++){
+                rowList.get(i).light(index);
+            }
+       
         }
     }
 
@@ -50,6 +87,7 @@ class Staff extends JPanel implements ActionListener{
     public void addSound(String fn,int length){
         rowList.add(new Row(fn,length));
         this.add(rowList.get(rowList.size()-1));
+        rowList.get(rowList.size()-1).addMouseListener(this);
         this.revalidate();
         this.repaint();
     }
@@ -61,7 +99,18 @@ class Staff extends JPanel implements ActionListener{
     }
 
     public int getLength(){
-        return rowList.get(0).getLength();
+        if (rowList.size() != 0)
+            return rowList.get(0).getLength();
+        else
+            return 0;
+    }
+
+    public String dumpString(){
+        String dumpString="";
+        for (int i = 0; i<rowList.size(); i++){
+            dumpString += rowList.get(i).dumpString() + "\n";
+        }
+        return dumpString;
     }
 
 }
