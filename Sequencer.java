@@ -28,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JComboBox;
+import javax.swing.ImageIcon;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -40,6 +41,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.HashMap;
@@ -52,14 +54,11 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     CardLayout cardMan;
     JPanel center, topLabel,btmProperties;
     JComboBox fileChoose;                                              // File ComboBox
-    JButton loadSound;                                                 // Load Sound button
     JScrollPane scrollWindow;
-    fileMenu menuBar;
+    FileMenu menuBar;
     Timer time;
     Presets pre;                                                       
     int basicDuration,count,beatCount,bpm,groove,playSelect,staffSelect;
-//    HashMap<int,int[]> hotKeys;
-
 
 
     public Sequencer(){  //Default constructor
@@ -95,13 +94,40 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
         pre = new Presets();  /*Right preset bank*/
 
-        loadSound = new JButton("Load Sound");                  /* Initialize Load Sound button*/
+        JButton loadSound = new JButton("Load Sound");                  /* Initialize Load Sound button*/
         loadSound.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
                 staffList.get(staffSelect).addSound(fileChoose.getSelectedItem().toString(),staffList.get(staffSelect).getLength());
             }
         });
-  
+
+        JButton playButton = new JButton(new ImageIcon("stop.png"));
+        playButton.setPreferredSize(new Dimension(20,20));
+        playButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent E){
+                time.start();
+            }
+        });
+
+        JButton pauseButton = new JButton("||");
+        pauseButton.setPreferredSize(new Dimension(20,20));
+        pauseButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent E){
+                time.stop();
+            }
+        });
+
+
+        JButton stopButton = new JButton("S");
+        stopButton.setPreferredSize(new Dimension(20,20));
+        stopButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent E){
+                time.stop();
+                staffList.get(playSelect).reset();
+                count = 0;
+            }
+        });  
+
         File temp = new File("Samples");    /* Samples Folder (located in %CHOSEN_DIRECTOR%/Samples) */
 
         fileChoose = new JComboBox(temp.listFiles());
@@ -115,7 +141,9 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         for (int i = 0; i <8; i++){
             center.add(staffList.get(i),""+i);
         }
-//	center.setPreferredSize(new Dimension(200,200));
+
+        menuBar = new FileMenu();
+
         topLabel.add(bpmLab);
 	topLabel.add(BPM);
         topLabel.add(grooveLab);
@@ -126,23 +154,34 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         topLabel.add(basDur);
 
         btmProperties = new JPanel();
+        btmProperties.add(playButton);
+        btmProperties.add(pauseButton);
+        btmProperties.add(stopButton);
         btmProperties.add(fileChoose);
         btmProperties.add(loadSound);
 
         this.addKeyListener(this);
         this.addMouseListener(this);
+        this.setJMenuBar( menuBar);
         this.setTitle("DRM SEQ");
         this.setLayout(new BorderLayout());
         this.add(center,BorderLayout.CENTER);
 	this.add(topLabel,BorderLayout.NORTH);
         this.add(btmProperties,BorderLayout.SOUTH);
         this.add(pre,BorderLayout.EAST);
-        this.setJMenuBar(menuBar);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.pack();
         this.setVisible(true);
         this.setFocusable(true); //Allow JPanel to be focused on (to avoid unfocusing for hotkeys)
+    }
+
+    public void createTopLabel(){
+
+    }
+
+    public void createBottomLabel(){
+        
     }
 
     public void actionPerformed(ActionEvent e){
@@ -198,39 +237,67 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     }
 
     public void keyPressed(KeyEvent k){
-        staffList.get(playSelect).reset();
-        if (k.getKeyCode() == KeyEvent.VK_SPACE){
-            time.stop();
-            staffList.get(playSelect).light(0);
-            count=1;
-            time.setDelay((int)((60000.0/(bpm*2.0))*(.01*(groove))));
-            time.start();
-        }
-        
-        if (k.getKeyCode() == KeyEvent.VK_8)
-            playSelect = 7;
-        if (k.getKeyCode() == KeyEvent.VK_7)
-            playSelect = 6;
-        if (k.getKeyCode() == KeyEvent.VK_6)
-            playSelect = 5;
-        if (k.getKeyCode() == KeyEvent.VK_5)
-            playSelect = 4;
-        if (k.getKeyCode() == KeyEvent.VK_4)
-            playSelect = 3;
-        if (k.getKeyCode() == KeyEvent.VK_3)
-            playSelect = 2;
-        if (k.getKeyCode() == KeyEvent.VK_2)
-            playSelect = 1;
-        if (k.getKeyCode() == KeyEvent.VK_1)
-            playSelect = 0;
 
-        if (k.getKeyCode() == KeyEvent.VK_EQUALS){
-             BPM.setValue(Integer.parseInt(BPM.getValue().toString())+1);
-        }
+        switch (k.getKeyCode()){
+            case KeyEvent.VK_SPACE:
+                time.stop();
+                staffList.get(playSelect).reset();
+                staffList.get(playSelect).light(0);
+                count=1;
+                time.setDelay((int)((60000.0/(bpm*2.0))*(.01*(groove))));
+                time.start();
+                break;
+                
+            case KeyEvent.VK_8:
+                staffList.get(playSelect).reset();
+                playSelect = 7;
+                break;
+            case KeyEvent.VK_7:
+                staffList.get(playSelect).reset();
+                playSelect = 6;
+                break;
+            case KeyEvent.VK_6:
+                staffList.get(playSelect).reset();
+                playSelect = 5;
+                break;
+            case KeyEvent.VK_5:
+                staffList.get(playSelect).reset();
+                playSelect = 4;
+                break;
+            case KeyEvent.VK_4:
+                staffList.get(playSelect).reset();
+                playSelect = 3;
+                break;
+            case KeyEvent.VK_3:
+                staffList.get(playSelect).reset();
+                playSelect = 2;
+                break;
+            case KeyEvent.VK_2:
+                staffList.get(playSelect).reset();
+                playSelect = 1;
+                break;
+            case KeyEvent.VK_1:
+                staffList.get(playSelect).reset();
+                playSelect = 0;
+                break;
 
-        if (k.getKeyCode() == KeyEvent.VK_MINUS){
-            BPM.setValue(Integer.parseInt(BPM.getValue().toString())-1);
-        }
+            case KeyEvent.VK_EQUALS:
+                BPM.setValue(Integer.parseInt(BPM.getValue().toString())+1);
+                break;
+            case KeyEvent.VK_MINUS:
+                BPM.setValue(Integer.parseInt(BPM.getValue().toString())-1);
+                break;
+            
+            case KeyEvent.VK_A:
+                break;
+            case KeyEvent.VK_S:
+                break;
+            case KeyEvent.VK_D:
+                break;
+            case KeyEvent.VK_F:
+                break;
+
+            }
 
     }
 

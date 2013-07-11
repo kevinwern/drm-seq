@@ -1,14 +1,19 @@
 import java.util.LinkedList;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.border.LineBorder;
 import java.awt.Dimension;
 import java.awt.Color;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-class Row extends JPanel  {
+class Row extends JPanel implements ActionListener{
 
     LinkedList<Cell> cells;
-    JLabel tag;
     int numCells;
+    JButton muteButton,soloButton;
+    boolean isMuted=false, isSoloed=false;
     Sound sound;
 
     public Row(String filename, int length) {
@@ -20,11 +25,23 @@ class Row extends JPanel  {
 
         numCells = length;
         sound = new Sound(filename);
-        tag = new JLabel(filename);
+        String[] strFragments = filename.split("/");
+        JLabel tag = new JLabel(strFragments[strFragments.length-1],JLabel.CENTER);
         tag.setPreferredSize(new Dimension(100,10));
+        muteButton = new JButton("M");
+        muteButton.setPreferredSize(new Dimension(15,15));
+        muteButton.setFocusable(false);
+        muteButton.addActionListener(this);
+        soloButton = new JButton("S");
+        soloButton.setPreferredSize(new Dimension(15,15));
+        soloButton.setFocusable(false);
+        soloButton.addActionListener(this);
+
 //        this.setBackground(Color.black);
 
         this.setPreferredSize(new Dimension(400,20));
+        this.add(soloButton);
+        this.add(muteButton);
         this.add(tag);
         for (int i = 0; i<length; i++){
             this.add(cells.get(i));
@@ -66,7 +83,7 @@ class Row extends JPanel  {
         else{
             cells.get(index-1).reset();
         }
-        if (cells.get(index).isLit()) play();
+        if (cells.get(index).isLit() && !isMuted ) play();
     }
 
     void reset(){
@@ -76,5 +93,40 @@ class Row extends JPanel  {
 
     public void play(){
         sound.play();
+    }
+
+    public void toggleMute(){
+        isMuted = !isMuted;
+        if (isMuted ){
+            muteButton.setForeground(Color.RED);
+//            muteButton.setBorder(new LineBorder(Color.RED,1));
+        }
+        else{
+            muteButton.setForeground(Color.BLACK);
+//            muteButton.setBorder(new LineBorder(Color.BLACK,1));
+        }
+    }
+
+    public void toggleSolo(){
+        isSoloed = !isSoloed;
+        if (isSoloed)
+            soloButton.setForeground(Color.YELLOW);
+        else
+            soloButton.setForeground(Color.BLACK);
+    }
+
+    public void actionPerformed(ActionEvent e){
+        if (e.getSource().equals(muteButton))
+            toggleMute();
+        if (e.getSource().equals(soloButton))
+            toggleSolo();
+    }
+
+    public boolean isMuted(){
+        return isMuted;
+    }
+
+    public boolean isSoloed(){
+        return isSoloed;
     }
 }
