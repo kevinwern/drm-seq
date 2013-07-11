@@ -133,7 +133,7 @@ class Row extends JPanel implements ActionListener{
     }
 
     public String dumpString(){
-        String dumpedString = "Samples/"+file;
+        String dumpedString = file;
         if (isMuted) dumpedString += " M";
         else dumpedString += " m";
 

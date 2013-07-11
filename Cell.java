@@ -45,6 +45,10 @@ class Cell extends JPanel implements MouseListener {
     }
 
     public void mouseClicked(MouseEvent e){
+        toggleLight();
+    }
+
+    public void toggleLight(){
         if (isLit)
             this.setBackground(Color.black);
         else
