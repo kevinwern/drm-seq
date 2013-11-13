@@ -10,7 +10,7 @@ take samples and use clips to transition/expand on a song.                      
 These hotkeys are 100% written for the way I think, feel free to modify them.  If you have any  |
 suggestions/fixes, let me know.                                                                 |
                                                                                                 |
-I think software like this lends very well to contributions.  It's fairly small, modular, and   |
+I think software like this lends very well to contributions.  It's fairly small and  modular,so |
 anything I think of that wasn't convenient from a night before can be added in--I had a lot     |
 of fun designing file formats, hotkey schemes, and fixing the other things I hated about open   |
 software mixers.                                                                                |
@@ -64,7 +64,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     FileMenu menuBar;
     Timer time;
     Presets pre;                                                       
-    int basicDuration,count,beatCount,bpm,groove,playSelect,staffSelect;
+    int basicDuration,count,beatCount,bpm,groove,playSelect,staffSelect;  // Integers for determining play times
 
 
     public Sequencer(){  //Default constructor
@@ -107,7 +107,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             }
         });
 
-        ImageButton playButton = new ImageButton("play.png");
+        ImageButton playButton = new ImageButton("play.png");   //play, pause, and stop buttons
         playButton.setPreferredSize(new Dimension(20,20));
         playButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
@@ -134,7 +134,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             }
         });  
 
-        File temp = new File("Samples");    /* Samples Folder (located in %CHOSEN_DIRECTOR%/Samples) */
+        File temp = new File("Samples");    /* Samples Folder (located in %CHOSEN_DIRECTORY%/Samples) */
 
         fileChoose = new JComboBox(temp.listFiles());
         bpm = Integer.parseInt(BPM.getValue().toString());
@@ -142,7 +142,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         time.start();
         
         cardMan = new CardLayout();
-        center = new JPanel(cardMan);
+        center = new JPanel(cardMan);                      // Lays out 8 banks for user
         center.setPreferredSize(new Dimension(400,400));
         for (int i = 0; i <8; i++){
             center.add(staffList.get(i),""+i);
@@ -192,9 +192,9 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     }
 
     public void actionPerformed(ActionEvent e){
-        if(e.getSource().equals(time)){
+        if(e.getSource().equals(time)){                          /* Run first block for clock cycle */
         if (bpm!= Integer.parseInt(BPM.getValue().toString())){
-            bpm = Integer.parseInt(BPM.getValue().toString());
+            bpm = Integer.parseInt(BPM.getValue().toString());    /* Identify changes in either BPM or swing factor */
         }
         if (groove != Integer.parseInt(Groove.getValue().toString())){
             groove = Integer.parseInt(Groove.getValue().toString());
@@ -205,7 +205,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         }
 
         if (!beatCt.getText().isEmpty()){
-            if  (Integer.parseInt( basDur.getText() ) == 4 || Integer.parseInt( basDur.getText() ) == 8){
+            if  (Integer.parseInt( basDur.getText() ) == 4 || Integer.parseInt( basDur.getText() ) == 8){ /* Determine best way to factor in time signature */
                 beatCount = Integer.parseInt(beatCt.getText());
                 basicDuration = Integer.parseInt(basDur.getText());
                 if (basicDuration == 4){
@@ -226,16 +226,16 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         }        
 
         staffList.get(playSelect).light(count);
-        if (count >= staffList.get(playSelect).getLength()-1) count = 0;
+        if (count >= staffList.get(playSelect).getLength()-1) count = 0;  /* Increment cursor and play sound */
         else count++;
         if (basicDuration == 4){
             if (count % 2 == 0){
-                time.setDelay((int)((60000.0/(bpm*2.0))*(.01*groove)));
+                time.setDelay((int)((60000.0/(bpm*2.0))*(.01*groove)));  /* Determine next clock tick from BPM */
             }
             else
                  time.setDelay((int)((60000.0/(bpm*2.0))*(.01*(100-groove))));
         }
-        else if (basicDuration == 8) {
+        else if (basicDuration == 8) {  /* Perform same operations for compound time signatures (i.e. 6/8, 9/8, 12/8)
             if (count % 3 == 2){
                 time.setDelay((int)((60000.0/(bpm*3))*(.01*groove)));
             }
@@ -244,7 +244,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         }
         }
 
-        else if (e.getActionCommand().equals("about")){
+        else if (e.getActionCommand().equals("about")){  /* Menu actions */
             showDialog();
         }
         else if (e.getActionCommand().equals("save")){
@@ -257,7 +257,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             startNew();
         }
     }
-
+}
     public void startNew(){
         time.stop();
         BPM.setValue(120);
@@ -275,7 +275,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         time.start();
     }
 
-    public void showDialog(){
+    public void showDialog(){   /* Help menu */
         JOptionPane.showMessageDialog(this, 
         "Created January and July 2013\n\n"+
         "Some quick controls:\n" +
@@ -300,11 +300,11 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         }
     }
 
-    public void writeFile(File f){
+    public void writeFile(File f){   /* save file */
         if (!f.exists()){
             String toWrite = bpm+" "+groove+" "+beatCount+" "+basicDuration+"\n";
             for (int i = 0; i<staffList.size(); i++){
-                toWrite+=i+"\n"+staffList.get(i).dumpString();
+                toWrite+=i+"\n"+staffList.get(i).dumpString(); /* Dump string for each staff bank */
             }
             
             try{FileWriter o1 = new FileWriter(f);
@@ -382,9 +382,9 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         } catch (IOException e) {}
     }
 
-    public void keyPressed(KeyEvent k){
+    public void keyPressed(KeyEvent k){  /* Hotkeys */
 
-        switch (k.getKeyCode()){
+        switch (k.getKeyCode()){     /* Space: Restart loop */
             case KeyEvent.VK_SPACE:
                 time.stop();
                 staffList.get(playSelect).reset();
@@ -394,7 +394,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
                 time.start();
                 break;
                 
-            case KeyEvent.VK_8:
+            case KeyEvent.VK_8:    /* 1-8: select bank */
                 staffList.get(playSelect).reset();
                 playSelect = 7;
                 break;
@@ -427,7 +427,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
                 playSelect = 0;
                 break;
 
-            case KeyEvent.VK_EQUALS:
+            case KeyEvent.VK_EQUALS:  /* +/- : increase/decrease BPM */
                 BPM.setValue(Integer.parseInt(BPM.getValue().toString())+1);
                 break;
             case KeyEvent.VK_MINUS:
@@ -474,7 +474,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args){  /* Initialize Sequencer */
         Sequencer seq = new Sequencer();
     }
 }

@@ -1,3 +1,6 @@
+//Kevin Wern
+//Defines a single row in the Staff class
+
 import java.util.LinkedList;
 import javax.swing.JButton;
 import javax.swing.JPanel;

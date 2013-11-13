@@ -1,3 +1,8 @@
+/* Sound.java: simple interface for playing sounds
+*  Kevin Wern DRM-SEQ
+*
+*/
+
 import java.applet.AudioClip;
 import java.applet.Applet;
 import java.io.File;
@@ -7,7 +12,7 @@ class Sound {
 
     AudioClip ac;
 
-    public Sound (String fileName) {
+    public Sound (String fileName) {  /* create audio file handle */
         try {
             File file = new File(fileName);
             ac = Applet.newAudioClip(file.toURI().toURL());
@@ -17,7 +22,7 @@ class Sound {
         }
     }
 
-    public void play(){
+    public void play(){ /* play sound */
         ac.play();
     }
 
