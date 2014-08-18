@@ -1,23 +1,9 @@
 /***--------------------------------------------------------------------------------------------*  
 DRM SEQ:                                                                                        |
 Author: Kevin Wern                                                                              |
-I'm a DJ.  I hate paying for software. I wrote this mainly for myself, but you can have it too. |
-                                                                                                |
-This is intended to be a "live sequencer"--it's just a compilation of ideas I had as I began to |
-think of ways to make convenient music software for what I do.  I normally use it as a way to   |
-take samples and use clips to transition/expand on a song.                                      |
-                                                                                                |
-These hotkeys are 100% written for the way I think, feel free to modify them.  If you have any  |
-suggestions/fixes, let me know.                                                                 |
-                                                                                                |
-I think software like this lends very well to contributions.  It's fairly small and  modular,so |
-anything I think of that wasn't convenient from a night before can be added in--I had a lot     |
-of fun designing file formats, hotkey schemes, and fixing the other things I hated about open   |
-software mixers.                                                                                |
-                                                                                                |
 ---------------------------------------------------------------------------------------------***/
 
-//Sequencer.java: contains the main window and options, as well as the basic "tree" of how things work
+//Sequencer.java: contains the main window and options, and establishes upper hierarchy of editing window
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JFileChooser;
@@ -64,7 +50,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     FileMenu menuBar;
     Timer time;
     Presets pre;                                                       
-    int basicDuration,count,beatCount,bpm,groove,playSelect,staffSelect;  // Integers for determining play times
+    int basicDuration,count,length,beatCount,bpm,groove,playSelect,staffSelect;  // Integers for determining play times
 
 
     public Sequencer(){  //Default constructor
@@ -103,11 +89,11 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         JButton loadSound = new JButton("Load Sound");                  /* Initialize Load Sound button*/
         loadSound.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
-                staffList.get(staffSelect).addSound(fileChoose.getSelectedItem().toString(),staffList.get(staffSelect).getLength());
+                staffList.get(staffSelect).addSound(fileChoose.getSelectedItem().toString(),length);
             }
         });
 
-        ImageButton playButton = new ImageButton("play.png");   //play, pause, and stop buttons
+        ImageButton playButton = new ImageButton("Images/play.png");   //play, pause, and stop buttons
         playButton.setPreferredSize(new Dimension(20,20));
         playButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
@@ -115,7 +101,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             }
         });
 
-        ImageButton pauseButton = new ImageButton("pause.png");
+        ImageButton pauseButton = new ImageButton("Images/pause.png");
         pauseButton.setPreferredSize(new Dimension(20,20));
         pauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
@@ -124,7 +110,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         });
 
 
-        ImageButton stopButton = new ImageButton("stop.png");
+        ImageButton stopButton = new ImageButton("Images/stop.png");
         stopButton.setPreferredSize(new Dimension(20,20));
         stopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
@@ -204,26 +190,21 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             cardMan.show(center,staffSelect+"");
         }
 
-        if (!beatCt.getText().isEmpty()){
+        if (!(beatCt.getText().isEmpty() || basDur.getText().isEmpty()) && (beatCount != Integer.parseInt( beatCt.getText() ) || basicDuration != Integer.parseInt( basDur.getText() ))){
             if  (Integer.parseInt( basDur.getText() ) == 4 || Integer.parseInt( basDur.getText() ) == 8){ /* Determine best way to factor in time signature */
                 beatCount = Integer.parseInt(beatCt.getText());
                 basicDuration = Integer.parseInt(basDur.getText());
-                if (basicDuration == 4){
-                    for (int i=0; i<8; i++){
-                        staffList.get(i).setLength(beatCount*4);
-                    }
-                }
-                else if (basicDuration == 8){
-                    for (int i=0;i<8; i++){
-                        staffList.get(i).setLength(beatCount*2);
-                    }
+
+                if (basicDuration == 4) length = beatCount*4;
+                else if (basicDuration == 8) length = beatCount * 2;
+
+                for ( int i = 0; i < 8; i++ ){
+                  staffList.get(i).setLength(length);
                 }
             }
-            if (beatCount != Integer.parseInt( beatCt.getText() )){
-                basDur.setText("");
-                basDur.requestFocus();
-            }
-        }        
+            if (count >= length) count = 0;
+          }
+                
 
         staffList.get(playSelect).light(count);
         if (count >= staffList.get(playSelect).getLength()-1) count = 0;  /* Increment cursor and play sound */
