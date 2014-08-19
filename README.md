@@ -1,33 +1,24 @@
-drum-machine
-============
+# drum-machine
 
-Drum Machine to be updated.
+Drum Machine/sampler.
 
-Current usage:
-$ make
-$ ./Sequencer
-
------------------------------------------------
-Overview
------------------------------------------------
+## Overview
 
 DRM-SEQ is a live drum sequencer/sampler capable of creating loops with small
 WAV samples.  Any WAV file can be imported to the program. It has 8 "banks" capable
 of storing a unique instance of a loop.
 
------------------------------------------------
-Controls
------------------------------------------------
+
+## Controls
 
 Create a row by selecting a sound using the drop down menu. ("Load Sound" button)
 Click any of the cells to insert an instance of the sound there. Universally, you control:
 
 BPM: beats per minute
 Time Signature: feeling of the beat/beats per measure
-Groove: the "swing" of the notes.  The number is a percentage representing the amount of 
-        *actual* time given to the first 8th note of an entire quarter note
+Groove: the "swing" of the notes.  The number is a percentage representing the amount of *actual* time given to the first 8th note of an entire quarter note
 
-Other assorted info:
+**Other assorted info:**
 
 Saving: you MUST save the file as a .drm file.
 Opening: that's why you should do the above.  I'm going to mandate it at some point...
