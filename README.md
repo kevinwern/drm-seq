@@ -1,4 +1,4 @@
-# drum-machine
+# DRM-SEQ
 
 Drum Machine/sampler.
 
@@ -8,6 +8,7 @@ DRM-SEQ is a live drum sequencer/sampler capable of creating loops with small
 WAV samples.  Any WAV file can be imported to the program. It has 8 "banks" capable
 of storing a unique instance of a loop.
 
+To install, simply run 'make'.  The name of the executeable is 'DRM-SEQ'
 
 ## Controls
 
