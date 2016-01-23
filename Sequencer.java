@@ -135,7 +135,6 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         }
 
         menuBar = new FileMenu();
-        menuBar.addListeners(this);
 
         topLabel.add(bpmLab);
 	topLabel.add(BPM);
