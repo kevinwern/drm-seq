@@ -16,6 +16,8 @@ public class Metronome implements ActionListener {
     public static final int  MIN_BPM = 30;
     public static final int  MAX_BEAT_COUNT = 12;
     public static final int  MIN_BEAT_COUNT = 1;
+    public static final int  MIN_SWING_FACTOR = 0;
+    public static final int  MAX_SWING_FACTOR = 1;
     public static final int BASIC_DURATION_EIGHT = 8;
     public static final int BASIC_DURATION_FOUR = 4;
     private static final int INITIAL_BPM = 120;
@@ -69,19 +71,19 @@ public class Metronome implements ActionListener {
             double swingFactor) {
 	if (beatCount > MAX_BEAT_COUNT || beatCount < MIN_BEAT_COUNT) {
             throw new IllegalArgumentException(String.format("beatCount must be in range [1,12]. Got %d",
-                beatCount));
+                    beatCount));
 	}
 	if (basicDuration != BASIC_DURATION_FOUR && basicDuration != BASIC_DURATION_EIGHT) {
             throw new IllegalArgumentException(String.format("basicDuration must be 4 or 8. Got %d",
-                basicDuration));
+                    basicDuration));
 	}
 	if (beatsPerMinute > MAX_BPM || beatsPerMinute < MIN_BPM) {
             throw new IllegalArgumentException(String.format("beatsPerMinute must be in range [1,255]. Got %d",
-                beatsPerMinute));
+                    beatsPerMinute));
 	}
-	if (swingFactor > 1 || swingFactor < 0) {
+	if (swingFactor > MAX_SWING_FACTOR || swingFactor < MIN_SWING_FACTOR) {
             throw new IllegalArgumentException(String.format("swingFactor must be in range [0,1]. Got %f",
-                swingFactor));
+                    swingFactor));
 	}
 
         this.beatCount = beatCount;
@@ -103,7 +105,8 @@ public class Metronome implements ActionListener {
 	}
 	else {
             // Should never happen
-            throw new IllegalArgumentException("cannot use basic duration other than 4 or 8");
+            throw new IllegalArgumentException(String.format("basicDuration must be 4 or 8. Got %d",
+                    basicDuration));
 	}
 	return new TimerIntervalGroup(
             (int) (baseInterval * swingFactor),
@@ -120,7 +123,8 @@ public class Metronome implements ActionListener {
 	}
 	else {
 	    // Should never happen
-            throw new IllegalArgumentException("cannot use basic duration other than 4 or 8");
+            throw new IllegalArgumentException(String.format("basicDuration must be 4 or 8. Got %d",
+                    basicDuration));
 	}
     }
 
