@@ -8,7 +8,14 @@ DRM-SEQ is a live drum sequencer/sampler capable of creating loops with small
 WAV samples.  Any WAV file can be imported to the program. It has 8 "banks" capable
 of storing a unique instance of a loop.
 
-To install, simply run 'make'.  The name of the executeable is 'DRM-SEQ'
+Compilation:
+$ make
+
+Execution:
+$ make run
+
+Clean:
+$ make clean
 
 ## Controls
 
@@ -21,12 +28,8 @@ Groove: the "swing" of the notes.  The number is a percentage representing the a
 
 **Other assorted info:**
 
-Saving: you MUST save the file as a .drm file.
-Opening: that's why you should do the above.  I'm going to mandate it at some point...
-New: CLEARS your current work...be careful.
-
-Solo/mute: if soloed, the part plays only by itself or with other soloed parts.
-           muted is self explanatory.
+Solo/mute: If soloed, the part plays only by itself or with other soloed parts.
+    Muted is self explanatory.
 
 Deleting rows: right-click on a row to delete it
 
