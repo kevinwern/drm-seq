@@ -45,87 +45,87 @@ public class Metronome implements ActionListener {
     private ArrayList<MetronomeListener> registeredObservers = new ArrayList<MetronomeListener>();
 
     public Metronome() {
-	beatCount = INITIAL_BEAT_COUNT;
-	basicDuration = INITIAL_BASIC_DURATION;
-	beatsPerMinute = INITIAL_BPM;
-	swingFactor = INITIAL_SWING_FACTOR;
-	currentClick = INITIAL_CLICK;
-	clickIntervals = CalculateIntervals();
-	clicksPerCycle = CalculateClicksPerCycle();
+        beatCount = INITIAL_BEAT_COUNT;
+        basicDuration = INITIAL_BASIC_DURATION;
+        beatsPerMinute = INITIAL_BPM;
+        swingFactor = INITIAL_SWING_FACTOR;
+        currentClick = INITIAL_CLICK;
+        clickIntervals = CalculateIntervals();
+        clicksPerCycle = CalculateClicksPerCycle();
         timer = new Timer(clickIntervals.intervalOnBeat, this);
         timer.start();
     }
 
     public void actionPerformed(ActionEvent e) {
-	if (currentClick > clicksPerCycle) {
-	    currentClick = INITIAL_CLICK;
-	}
+        if (currentClick > clicksPerCycle) {
+            currentClick = INITIAL_CLICK;
+        }
         NotifyObservers();
-	currentClick++;
-	timer.setDelay(currentClick % 2 == 0
-            ? clickIntervals.GetIntervalOffBeat()
-	    : clickIntervals.GetIntervalOnBeat());
+        currentClick++;
+        timer.setDelay(currentClick % 2 == 0
+                ? clickIntervals.GetIntervalOffBeat()
+                : clickIntervals.GetIntervalOnBeat());
     }
 
     public void Update(int beatCount, int basicDuration, int beatsPerMinute,
             double swingFactor) {
-	if (beatCount > MAX_BEAT_COUNT || beatCount < MIN_BEAT_COUNT) {
+        if (beatCount > MAX_BEAT_COUNT || beatCount < MIN_BEAT_COUNT) {
             throw new IllegalArgumentException(String.format("beatCount must be in range [1,12]. Got %d",
                     beatCount));
-	}
-	if (basicDuration != BASIC_DURATION_FOUR && basicDuration != BASIC_DURATION_EIGHT) {
+        }
+        if (basicDuration != BASIC_DURATION_FOUR && basicDuration != BASIC_DURATION_EIGHT) {
             throw new IllegalArgumentException(String.format("basicDuration must be 4 or 8. Got %d",
                     basicDuration));
-	}
-	if (beatsPerMinute > MAX_BPM || beatsPerMinute < MIN_BPM) {
+        }
+        if (beatsPerMinute > MAX_BPM || beatsPerMinute < MIN_BPM) {
             throw new IllegalArgumentException(String.format("beatsPerMinute must be in range [1,255]. Got %d",
-                    beatsPerMinute));
-	}
-	if (swingFactor > MAX_SWING_FACTOR || swingFactor < MIN_SWING_FACTOR) {
+                   beatsPerMinute));
+        }
+        if (swingFactor > MAX_SWING_FACTOR || swingFactor < MIN_SWING_FACTOR) {
             throw new IllegalArgumentException(String.format("swingFactor must be in range [0,1]. Got %f",
-                    swingFactor));
-	}
-
+                   swingFactor));
+        }
+    
         this.beatCount = beatCount;
-	this.basicDuration = basicDuration;
+        this.basicDuration = basicDuration;
         this.beatsPerMinute = beatsPerMinute;
-	this.swingFactor = swingFactor;
-	this.clicksPerCycle = CalculateClicksPerCycle();
-	this.clickIntervals = CalculateIntervals();
+        this.swingFactor = swingFactor;
+        this.clicksPerCycle = CalculateClicksPerCycle();
+        this.clickIntervals = CalculateIntervals();
     }
 
     private TimerIntervalGroup CalculateIntervals() {
         int beatLengthMilliseconds = MILLISECONDS_PER_MINUTE/beatsPerMinute;
-	int baseInterval = beatLengthMilliseconds;
+        int baseInterval = beatLengthMilliseconds;
         if (basicDuration == BASIC_DURATION_FOUR) {
             baseInterval = beatLengthMilliseconds/2;
         }
-	else if (basicDuration == BASIC_DURATION_EIGHT) {
+        else if (basicDuration == BASIC_DURATION_EIGHT) {
             baseInterval = beatLengthMilliseconds/4;
-	}
-	else {
+        }
+        else {
             // Should never happen
             throw new IllegalArgumentException(String.format("basicDuration must be 4 or 8. Got %d",
                     basicDuration));
-	}
-	return new TimerIntervalGroup(
-            (int) (baseInterval * swingFactor),
-	    (int) (baseInterval * (1 - swingFactor))
+        }
+        return new TimerIntervalGroup(
+                (int) (baseInterval * swingFactor),
+                (int) (baseInterval * (1 - swingFactor))
         );
     }
 
     private int CalculateClicksPerCycle() {
         if (basicDuration == BASIC_DURATION_FOUR) {
-	    return beatCount * 4;
-	}
-	else if (basicDuration == BASIC_DURATION_EIGHT) {
+            return beatCount * 4;
+        }
+        else if (basicDuration == BASIC_DURATION_EIGHT) {
             return beatCount * 2;
-	}
-	else {
-	    // Should never happen
+        }
+        else {
+            // Should never happen
             throw new IllegalArgumentException(String.format("basicDuration must be 4 or 8. Got %d",
                     basicDuration));
-	}
+        }
     }
 
     public void RegisterObserver(MetronomeListener observer) {
@@ -135,7 +135,7 @@ public class Metronome implements ActionListener {
     public void NotifyObservers() {
         for (MetronomeListener observer : registeredObservers){
             observer.trigger(currentClick);
-	}
+        }
     }
 
     // Represents the alternating intervals, taking swing factor into account.
@@ -145,15 +145,15 @@ public class Metronome implements ActionListener {
 
         private TimerIntervalGroup(int intervalOnBeat, int intervalOffBeat){
             this.intervalOnBeat = intervalOnBeat;
-	    this.intervalOffBeat = intervalOffBeat;
+            this.intervalOffBeat = intervalOffBeat;
         }
 
         int GetIntervalOnBeat(){
-	    return intervalOnBeat;
+            return intervalOnBeat;
         }
 
         int GetIntervalOffBeat(){
-	    return intervalOffBeat;
+            return intervalOffBeat;
         }
     }
 }
