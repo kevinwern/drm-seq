@@ -56,6 +56,26 @@ public class Metronome implements ActionListener {
         timer.start();
     }
 
+    public int GetBeatCount() {
+        return this.beatCount;
+    }
+
+    public int GetBeatsPerMinute() {
+        return this.beatsPerMinute;
+    }
+
+    public int GetBasicDuration() {
+        return this.basicDuration;
+    }
+
+    public int GetSwingFactor() {
+        return this.swingFactor;
+    }
+
+    public int GetClicksPerCycle(){
+        return this.clicksPerCycle;
+    }
+
     public void actionPerformed(ActionEvent e) {
         if (currentClick > clicksPerCycle) {
             currentClick = INITIAL_CLICK;
@@ -94,6 +114,30 @@ public class Metronome implements ActionListener {
         this.clickIntervals = CalculateIntervals();
     }
 
+    public void RegisterObserver(MetronomeListener observer) {
+        registeredObservers.add(observer);
+    }
+
+    public void NotifyObservers() {
+        for (MetronomeListener observer : registeredObservers){
+            observer.trigger(currentClick);
+        }
+    }
+
+    public void Start() {
+        timer.start();
+    }
+
+    public void Stop() {
+        timer.stop();
+    }
+
+    public void Reset() {
+        timer.stop();
+        currentClick = INITIAL_CLICK;
+        timer.start();
+    }
+
     private TimerIntervalGroup CalculateIntervals() {
         int beatLengthMilliseconds = MILLISECONDS_PER_MINUTE/beatsPerMinute;
         int baseInterval = beatLengthMilliseconds;
@@ -125,16 +169,6 @@ public class Metronome implements ActionListener {
             // Should never happen
             throw new IllegalArgumentException(String.format("basicDuration must be 4 or 8. Got %d",
                     basicDuration));
-        }
-    }
-
-    public void RegisterObserver(MetronomeListener observer) {
-        registeredObservers.add(observer);
-    }
-
-    public void NotifyObservers() {
-        for (MetronomeListener observer : registeredObservers){
-            observer.trigger(currentClick);
         }
     }
 
