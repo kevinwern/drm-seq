@@ -326,7 +326,6 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             case KeyEvent.VK_SPACE:
                 metronome.Stop();
                 staffList.get(playSelect).reset();
-                staffList.get(playSelect).light(0);
                 metronome.Reset();
                 break;
                 
