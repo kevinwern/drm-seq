@@ -25,9 +25,6 @@ class Staff extends JPanel implements MouseListener{
         this.metronome = metronome;
         this.setBackground(Color.gray);
         rowList = new LinkedList<Row>();
-
-//        rowList.add(new Row("Samples/kick.wav",16));
-
         this.setPreferredSize(new Dimension(400,400));
         this.setSize(400,400);
 
