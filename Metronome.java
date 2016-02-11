@@ -16,13 +16,13 @@ public class Metronome implements ActionListener {
     public static final int  MIN_BPM = 30;
     public static final int  MAX_BEAT_COUNT = 12;
     public static final int  MIN_BEAT_COUNT = 1;
-    public static final int  MIN_SWING_FACTOR = 0;
-    public static final int  MAX_SWING_FACTOR = 1;
+    public static final double MIN_SWING_FACTOR = 0.0;
+    public static final double MAX_SWING_FACTOR = 1.0;
     public static final int BASIC_DURATION_EIGHT = 8;
     public static final int BASIC_DURATION_FOUR = 4;
     private static final int INITIAL_BPM = 120;
-    private static final int INITIAL_CLICK = 1;
-    private static final int INITIAL_SWING_FACTOR = 50;
+    private static final int INITIAL_CLICK = 0;
+    private static final double INITIAL_SWING_FACTOR = .5;
     private static final int INITIAL_BASIC_DURATION = 4;
     private static final int INITIAL_BEAT_COUNT = 4;
     private static final int MILLISECONDS_PER_MINUTE = 60000;
@@ -52,7 +52,7 @@ public class Metronome implements ActionListener {
         currentClick = INITIAL_CLICK;
         clickIntervals = CalculateIntervals();
         clicksPerCycle = CalculateClicksPerCycle();
-        timer = new Timer(clickIntervals.intervalOnBeat, this);
+        timer = new Timer(clickIntervals.GetIntervalOnBeat(), this);
         timer.start();
     }
 
@@ -68,7 +68,7 @@ public class Metronome implements ActionListener {
         return this.basicDuration;
     }
 
-    public int GetSwingFactor() {
+    public double GetSwingFactor() {
         return this.swingFactor;
     }
 
@@ -77,7 +77,7 @@ public class Metronome implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        if (currentClick > clicksPerCycle) {
+        if (currentClick >= clicksPerCycle) {
             currentClick = INITIAL_CLICK;
         }
         NotifyObservers();
