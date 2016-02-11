@@ -362,23 +362,12 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
                 staffList.get(playSelect).reset();
                 playSelect = 0;
                 break;
-
             case KeyEvent.VK_EQUALS:  /* +/- : increase/decrease BPM */
                 BPM.setValue(Integer.parseInt(BPM.getValue().toString())+1);
                 break;
             case KeyEvent.VK_MINUS:
                 BPM.setValue(Integer.parseInt(BPM.getValue().toString())-1);
                 break;
-            
-            case KeyEvent.VK_A:
-                break;
-            case KeyEvent.VK_S:
-                break;
-            case KeyEvent.VK_D:
-                break;
-            case KeyEvent.VK_F:
-                break;
-
             }
 
     }
