@@ -23,7 +23,6 @@ import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.CardLayout;
-import javax.swing.Timer;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyListener;
@@ -48,9 +47,9 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     JComboBox fileChoose;                                              // File ComboBox
     JScrollPane scrollWindow;
     FileMenu menuBar;
-    Timer time;
     Presets pre;                                                       
-    int basicDuration,count,length,beatCount,bpm,groove,playSelect,staffSelect;  // Integers for determining play times
+    int playSelect,staffSelect;  // Integers for determining play times
+    Metronome metronome;
 
 
     public Sequencer(){  //Default constructor
@@ -61,15 +60,14 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         File baseFile = new File(fn);
     }
 
-    public void Initialize(){
-
-        count = 0;                        /* Starts at beginning of sample with bank 1 selected. */
-        playSelect=0;       
+    public void Initialize() {
+        playSelect=0;                       /* Starts at beginning of sample with bank 1 selected. */
         staffSelect=0;
         staffList = new LinkedList<Staff>();
+        metronome = new Metronome();
 
         for (int i = 0; i<8;i++){
-            staffList.add(new Staff());   /* Initialize staves*/
+            staffList.add(new Staff(this.metronome));   /* Initialize staves*/
         }
 	topLabel = new JPanel();          /* Top UI */
 	topLabel.setSize(100,100);
@@ -89,6 +87,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         JButton loadSound = new JButton("Load Sound");                  /* Initialize Load Sound button*/
         loadSound.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
+                int length = metronome.GetClicksPerCycle();
                 staffList.get(staffSelect).addSound(fileChoose.getSelectedItem().toString(),length);
             }
         });
@@ -97,7 +96,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         playButton.setPreferredSize(new Dimension(20,20));
         playButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
-                time.start();
+                metronome.Start();
             }
         });
 
@@ -105,7 +104,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         pauseButton.setPreferredSize(new Dimension(20,20));
         pauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
-                time.stop();
+                metronome.Stop();
             }
         });
 
@@ -114,18 +113,14 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         stopButton.setPreferredSize(new Dimension(20,20));
         stopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
-                time.stop();
+                metronome.Stop();
                 staffList.get(playSelect).reset();
-                count = 0;
             }
         });  
 
         File temp = new File("Samples");    /* Samples Folder (located in %CHOSEN_DIRECTORY%/Samples) */
 
         fileChoose = new JComboBox(temp.listFiles());
-        bpm = Integer.parseInt(BPM.getValue().toString());
-        time=new Timer(60000/480,this);
-        time.start();
         
         cardMan = new CardLayout();
         center = new JPanel(cardMan);                      // Lays out 8 banks for user
@@ -166,6 +161,8 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         this.pack();
         this.setVisible(true);
         this.setFocusable(true); //Allow JPanel to be focused on (to avoid unfocusing for hotkeys)
+
+        metronome.Start();
     }
 
     public void createTopLabel(){
@@ -177,54 +174,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     }
 
     public void actionPerformed(ActionEvent e){
-        if(e.getSource().equals(time)){                          /* Run first block for clock cycle */
-        if (bpm!= Integer.parseInt(BPM.getValue().toString())){
-            bpm = Integer.parseInt(BPM.getValue().toString());    /* Identify changes in either BPM or swing factor */
-        }
-        if (groove != Integer.parseInt(Groove.getValue().toString())){
-            groove = Integer.parseInt(Groove.getValue().toString());
-        }
-        if (staffSelect != pre.getSelection()-1){
-            staffSelect = pre.getSelection()-1;
-            cardMan.show(center,staffSelect+"");
-        }
-
-        if (!(beatCt.getText().isEmpty() || basDur.getText().isEmpty()) && (beatCount != Integer.parseInt( beatCt.getText() ) || basicDuration != Integer.parseInt( basDur.getText() ))){
-            if  (Integer.parseInt( basDur.getText() ) == 4 || Integer.parseInt( basDur.getText() ) == 8){ /* Determine best way to factor in time signature */
-                beatCount = Integer.parseInt(beatCt.getText());
-                basicDuration = Integer.parseInt(basDur.getText());
-
-                if (basicDuration == 4) length = beatCount*4;
-                else if (basicDuration == 8) length = beatCount * 2;
-
-                for ( int i = 0; i < 8; i++ ){
-                  staffList.get(i).setLength(length);
-                }
-            }
-            if (count >= length) count = 0;
-          }
-                
-
-        staffList.get(playSelect).light(count);
-        if (count >= staffList.get(playSelect).getLength()-1) count = 0;  /* Increment cursor and play sound */
-        else count++;
-        if (basicDuration == 4){
-            if (count % 2 == 0){
-                time.setDelay((int)((60000.0/(bpm*2.0))*(.01*groove)));  /* Determine next clock tick from BPM */
-            }
-            else
-                 time.setDelay((int)((60000.0/(bpm*2.0))*(.01*(100-groove))));
-        }
-        else if (basicDuration == 8) {  /* Perform same operations for compound time signatures (i.e. 6/8, 9/8, 12/8)
-            if (count % 3 == 2){
-                time.setDelay((int)((60000.0/(bpm*3))*(.01*groove)));
-            }
-            else
-                 time.setDelay((int)((60000.0/(bpm*3))*(.01*(100-groove))));
-        }
-        }
-
-        else if (e.getActionCommand().equals("about")){  /* Menu actions */
+        if (e.getActionCommand().equals("about")){  /* Menu actions */
             showDialog();
         }
         else if (e.getActionCommand().equals("save")){
@@ -237,9 +187,9 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             startNew();
         }
     }
-}
+
     public void startNew(){
-        time.stop();
+        metronome.Stop();
         BPM.setValue(120);
         Groove.setValue(50);
         basDur.setText(""+4);
@@ -249,10 +199,10 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         }
         staffList.clear();
         for (int i = 0; i<8; i++){
-            staffList.add(new Staff());
+            staffList.add(new Staff(this.metronome));
             center.add(staffList.get(i),""+i);
         }
-        time.start();
+        metronome.Start();
     }
 
     public void showDialog(){   /* Help menu */
@@ -281,20 +231,28 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     }
 
     public void writeFile(File f){   /* save file */
-        if (!f.exists()){
-            String toWrite = bpm+" "+groove+" "+beatCount+" "+basicDuration+"\n";
-            for (int i = 0; i<staffList.size(); i++){
-                toWrite+=i+"\n"+staffList.get(i).dumpString(); /* Dump string for each staff bank */
+        if (!f.exists()) {
+            int beatsPerMinute = metronome.GetBeatsPerMinute();
+            double swingFactor = metronome.GetSwingFactor();
+            int beatCount = metronome.GetBeatCount();
+            int basicDuration = metronome.GetBasicDuration();
+
+            String toWrite = beatsPerMinute + " " + swingFactor + " " + beatCount + " " + basicDuration + "\n";
+            for (int i = 0; i < staffList.size(); i++){
+                toWrite+=i + "\n" + staffList.get(i).dumpString(); /* Dump string for each staff bank */
             }
             
-            try{FileWriter o1 = new FileWriter(f);
-            o1.write(toWrite);
-            o1.flush();
-            o1.close(); }
+            try
+            {
+                FileWriter o1 = new FileWriter(f);
+                o1.write(toWrite);
+                o1.flush();
+                o1.close();
+            }
             catch (IOException e) {}
         }
 
-        else{
+        else {
             JOptionPane.showMessageDialog(this,"File already exists. Stopped writing.", "File Exists",JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -303,62 +261,62 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         JFileChooser openDialog = new JFileChooser();
         openDialog.addChoosableFileFilter(new FileNameExtensionFilter("drm","drm"));
         int result = openDialog.showOpenDialog(this);
-        if(result == JFileChooser.APPROVE_OPTION) {
+        if (result == JFileChooser.APPROVE_OPTION) {
             readFile(openDialog.getSelectedFile());
         }
     }
 
     public void readFile(File f){
-         try {
-         BufferedReader in = new BufferedReader(new FileReader(f));
-         String buffer;
-         String[] shards;
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(f));
+            String buffer;
+            String[] shards;
 
-        for (int i = 0; i<8; i++){
-            center.remove(staffList.get(i));
-        }
-        staffList.clear();
-        for (int i = 0; i<8; i++){
-            staffList.add(new Staff());
-            center.add(staffList.get(i),""+i);
-        }
+            for (int i = 0; i<8; i++){
+                center.remove(staffList.get(i));
+            }
+            staffList.clear();
+            for (int i = 0; i<8; i++){
+                staffList.add(new Staff(this.metronome));
+                center.add(staffList.get(i),""+i);
+            }
 
-        buffer = in.readLine();
-        shards = buffer.split(" ");
-        BPM.setValue(Integer.parseInt(shards[0]));
-        Groove.setValue(Integer.parseInt(shards[1]));
-        beatCt.setText(shards[2]);
-        basDur.setText(shards[3]);
-
-        int length;
-        
-        if (basicDuration==8)
-            length = 2*beatCount;
-        else
-            length = 4*beatCount;
-
-        int i = -1;
-        while ((buffer = in.readLine()) != null){
+            buffer = in.readLine();
             shards = buffer.split(" ");
-            if (shards.length == 1) {
-               i++;
-               continue;
-            }
+            BPM.setValue(Integer.parseInt(shards[0]));
+            Groove.setValue(Integer.parseInt(shards[1]));
+            beatCt.setText(shards[2]);
+            basDur.setText(shards[3]);
 
-            else if (shards.length == 3) {
-               staffList.get(i).addSound(shards[0],length);
-               if (shards[1].contains("M")){
-                   staffList.get(i).rowList.get(staffList.get(i).rowList.size()-1).toggleMute();
-               }
-               if (shards[1].contains("S")){
-                   staffList.get(i).rowList.get(staffList.get(i).rowList.size()-1).toggleSolo();
-               }
-               for (int j = 0; j<length; j++){
-                   if (shards[2].charAt(j)=='1')
-                       staffList.get(i).rowList.get(staffList.get(i).rowList.size()-1).cells.get(j).toggleLight();
-               }
+            metronome.Update(
+                    Integer.parseInt(beatCt.getText()),
+                    Integer.parseInt(basDur.getText()),
+                    (Integer) BPM.getValue(),
+                    (Float) Groove.getValue() / 100.0
+            );
+
+            int i = -1;
+            while ((buffer = in.readLine()) != null){
+                shards = buffer.split(" ");
+                if (shards.length == 1) {
+                   i++;
+                   continue;
+                }
+
+                else if (shards.length == 3) {
+                   staffList.get(i).addSound(shards[0], metronome.GetClicksPerCycle());
+                   if (shards[1].contains("M")){
+                       staffList.get(i).rowList.get(staffList.get(i).rowList.size()-1).toggleMute();
+                   }
+                   if (shards[1].contains("S")){
+                       staffList.get(i).rowList.get(staffList.get(i).rowList.size()-1).toggleSolo();
+                   }
+                   for (int j = 0; j < metronome.GetClicksPerCycle(); j++){
+                       if (shards[2].charAt(j)=='1')
+                           staffList.get(i).rowList.get(staffList.get(i).rowList.size()-1).cells.get(j).toggleLight();
+                   }
+                }
             }
-        }
         } catch (IOException e) {}
     }
 
@@ -366,12 +324,10 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
         switch (k.getKeyCode()){     /* Space: Restart loop */
             case KeyEvent.VK_SPACE:
-                time.stop();
+                metronome.Stop();
                 staffList.get(playSelect).reset();
                 staffList.get(playSelect).light(0);
-                count=1;
-                time.setDelay((int)((60000.0/(bpm*2.0))*(.01*(groove))));
-                time.start();
+                metronome.Reset();
                 break;
                 
             case KeyEvent.VK_8:    /* 1-8: select bank */

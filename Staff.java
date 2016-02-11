@@ -19,8 +19,10 @@ class Staff extends JPanel implements MouseListener{
     int vert,horiz,count;
     Timer time;
     LinkedList<Row> rowList;
+    Metronome metronome;
 
-    public Staff(){
+    public Staff(Metronome metronome){
+        this.metronome = metronome;
         this.setBackground(Color.gray);
         rowList = new LinkedList<Row>();
 
@@ -58,28 +60,6 @@ class Staff extends JPanel implements MouseListener{
 
     }
     
-    public void light(int index){
-        boolean soloOn = false;
-        for (int i = 0; i < rowList.size(); i++){
-            if(rowList.get(i).isSoloed()){
-                soloOn = true;
-                for (int j = 0; j < rowList.size(); j++){
-                    if (rowList.get(j).isSoloed())
-                        rowList.get(j).light(index);
-                    else
-                        rowList.get(j).reset();
-                 }
-                break;
-            }
-        }
-        if(!soloOn){
-            for (int i = 0; i < rowList.size(); i++){
-                rowList.get(i).light(index);
-            }
-       
-        }
-    }
-
     public void reset(){
         for (int i = 0; i < rowList.size(); i++){
             rowList.get(i).reset();
@@ -87,7 +67,7 @@ class Staff extends JPanel implements MouseListener{
     }   
 
     public void addSound(String fn,int length){
-        rowList.add(new Row(fn,length));
+        rowList.add(new Row(fn,length, this.metronome));
         this.add(rowList.get(rowList.size()-1));
         rowList.get(rowList.size()-1).addMouseListener(this);
         this.revalidate();
