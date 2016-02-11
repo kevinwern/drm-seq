@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.HashMap;
 
-public class Sequencer extends JFrame implements ActionListener,KeyListener,MouseListener{
+public class Sequencer extends JFrame implements ActionListener,KeyListener,MouseListener {
 
     LinkedList<Staff> staffList;                                       // Each of the staves for the 8 preset banks
     JSpinner BPM,Groove;                                               // Groove and BPM spinners
@@ -52,11 +52,11 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     Metronome metronome;
 
 
-    public Sequencer(){  //Default constructor
+    public Sequencer() {  //Default constructor
         Initialize();
     }
 
-    public Sequencer(String fn){      //Constructor for new files
+    public Sequencer(String fn){      // Constructor for new files
         File baseFile = new File(fn);
     }
 
@@ -69,22 +69,22 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         for (int i = 0; i<8;i++){
             staffList.add(new Staff(this.metronome));   /* Initialize staves*/
         }
-	topLabel = new JPanel();          /* Top UI */
-	topLabel.setSize(100,100);
+        topLabel = new JPanel();          /* Top UI */
+        topLabel.setSize(100,100);
         JLabel bpmLab = new JLabel("BPM");
-	JLabel timeSigLab = new JLabel("Time Signature");
+        JLabel timeSigLab = new JLabel("Time Signature");
         JLabel grooveLab = new JLabel("Groove (%):");
         SpinnerNumberModel spinNum = new SpinnerNumberModel(120,1,240,1);
         SpinnerNumberModel grooveNum = new SpinnerNumberModel(50,1,100,1);
         BPM = new JSpinner(spinNum);
         Groove = new JSpinner(grooveNum);
-	JLabel slash= new JLabel("/");
+        JLabel slash= new JLabel("/");
         beatCt = new JTextField("4",1);
         basDur = new JTextField("4",1);
 
         pre = new Presets();  /*Right preset bank*/
 
-        JButton loadSound = new JButton("Load Sound");                  /* Initialize Load Sound button*/
+        JButton loadSound = new JButton("Load Sound");                  /* Initialize Load Sound button */
         loadSound.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent E){
                 int length = metronome.GetClicksPerCycle();
@@ -132,11 +132,11 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         menuBar = new FileMenu();
 
         topLabel.add(bpmLab);
-	topLabel.add(BPM);
+        topLabel.add(BPM);
         topLabel.add(grooveLab);
         topLabel.add(Groove);
         topLabel.add(timeSigLab);
-	topLabel.add(beatCt);
+        topLabel.add(beatCt);
         topLabel.add(slash);
         topLabel.add(basDur);
 
@@ -149,11 +149,11 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
         this.addKeyListener(this);
         this.addMouseListener(this);
-        this.setJMenuBar( menuBar);
+        this.setJMenuBar(menuBar);
         this.setTitle("DRM SEQ");
         this.setLayout(new BorderLayout());
         this.add(center,BorderLayout.CENTER);
-	this.add(topLabel,BorderLayout.NORTH);
+        this.add(topLabel,BorderLayout.NORTH);
         this.add(btmProperties,BorderLayout.SOUTH);
         this.add(pre,BorderLayout.EAST);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
