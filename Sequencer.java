@@ -44,7 +44,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     JTextField beatCt, basDur;                                         // Time signature
     CardLayout cardMan;
     JPanel center, topLabel,btmProperties;
-    JComboBox fileChoose;                                              // File ComboBox
+    JComboBox<File> fileChoose;                                        // File ComboBox
     JScrollPane scrollWindow;
     FileMenu menuBar;
     Presets pre;                                                       
@@ -120,7 +120,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
         File temp = new File("Samples");    /* Samples Folder (located in %CHOSEN_DIRECTORY%/Samples) */
 
-        fileChoose = new JComboBox(temp.listFiles());
+        fileChoose = new JComboBox<File>(temp.listFiles());
         
         cardMan = new CardLayout();
         center = new JPanel(cardMan);                      // Lays out 8 banks for user
