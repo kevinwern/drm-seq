@@ -2,6 +2,10 @@
 
 Drum Machine/sampler.
 
+## Requirements
+
+Oracle java 1.7 or above: This WILL NOT WORK with OpenJDK (throws LineUnavailableException when opening sound input stream).
+
 ## Overview
 
 DRM-SEQ is a live drum sequencer/sampler capable of creating loops with small

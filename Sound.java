@@ -3,6 +3,10 @@
 *
 */
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.Line;
 import java.applet.AudioClip;
 import java.applet.Applet;
 import java.io.File;
@@ -10,20 +14,26 @@ import java.net.MalformedURLException;
 
 class Sound {
 
-    AudioClip ac;
+    Clip clip;
+    AudioInputStream inputStream;
 
     public Sound (String fileName) {  /* create audio file handle */
+        File file = new File(fileName);
         try {
-            File file = new File(fileName);
-            ac = Applet.newAudioClip(file.toURI().toURL());
+            inputStream = AudioSystem.getAudioInputStream(file.toURI().toURL());
+            Line.Info linfo = new Line.Info(Clip.class);
+            Line line = AudioSystem.getLine(linfo);
+            clip = (Clip) line;
+            clip.open(inputStream);
         }
-        catch (MalformedURLException mue){
-            throw new RuntimeException("bleh");
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     public void play(){ /* play sound */
-        ac.play();
+        clip.setFramePosition(0);
+        clip.start();
     }
 
 }
