@@ -9,9 +9,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.JButton;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
@@ -40,10 +38,9 @@ import java.util.HashMap;
 public class Sequencer extends JFrame implements ActionListener,KeyListener,MouseListener {
 
     LinkedList<Staff> staffList;                                       // Each of the staves for the 8 preset banks
-    JSpinner BPM,Groove;                                               // Groove and BPM spinners
-    JTextField beatCt, basDur;                                         // Time signature
     CardLayout cardMan;
-    JPanel center, topLabel,btmProperties;
+    BpmControls bpmControls;
+    JPanel center, btmProperties;
     JComboBox<File> fileChoose;                                        // File ComboBox
     JScrollPane scrollWindow;
     FileMenu menuBar;
@@ -69,19 +66,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         for (int i = 0; i<8;i++){
             staffList.add(new Staff(this.metronome));   /* Initialize staves*/
         }
-        topLabel = new JPanel();          /* Top UI */
-        topLabel.setSize(100,100);
-        JLabel bpmLab = new JLabel("BPM");
-        JLabel timeSigLab = new JLabel("Time Signature");
-        JLabel grooveLab = new JLabel("Groove (%):");
-        SpinnerNumberModel spinNum = new SpinnerNumberModel(120,1,240,1);
-        SpinnerNumberModel grooveNum = new SpinnerNumberModel(50,1,100,1);
-        BPM = new JSpinner(spinNum);
-        Groove = new JSpinner(grooveNum);
-        JLabel slash= new JLabel("/");
-        beatCt = new JTextField("4",1);
-        basDur = new JTextField("4",1);
-
+        bpmControls = new BpmControls(this.metronome);          /* Top UI */
         pre = new Presets();  /*Right preset bank*/
 
         JButton loadSound = new JButton("Load Sound");                  /* Initialize Load Sound button */
@@ -121,6 +106,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         File temp = new File("Samples");    /* Samples Folder (located in %CHOSEN_DIRECTORY%/Samples) */
 
         fileChoose = new JComboBox<File>(temp.listFiles());
+        temp = null;
         
         cardMan = new CardLayout();
         center = new JPanel(cardMan);                      // Lays out 8 banks for user
@@ -130,15 +116,6 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         }
 
         menuBar = new FileMenu();
-
-        topLabel.add(bpmLab);
-        topLabel.add(BPM);
-        topLabel.add(grooveLab);
-        topLabel.add(Groove);
-        topLabel.add(timeSigLab);
-        topLabel.add(beatCt);
-        topLabel.add(slash);
-        topLabel.add(basDur);
 
         btmProperties = new JPanel();
         btmProperties.add(playButton);
@@ -153,7 +130,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         this.setTitle("DRM SEQ");
         this.setLayout(new BorderLayout());
         this.add(center,BorderLayout.CENTER);
-        this.add(topLabel,BorderLayout.NORTH);
+        this.add(bpmControls, BorderLayout.NORTH);
         this.add(btmProperties,BorderLayout.SOUTH);
         this.add(pre,BorderLayout.EAST);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -190,10 +167,6 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
     public void startNew(){
         metronome.Stop();
-        BPM.setValue(120);
-        Groove.setValue(50);
-        basDur.setText(""+4);
-        beatCt.setText(""+4);
         for (int i = 0; i<8; i++){
             center.remove(staffList.get(i));
         }
@@ -202,6 +175,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             staffList.add(new Staff(this.metronome));
             center.add(staffList.get(i),""+i);
         }
+        metronome.Update(4, 4, 120, 0.5);
         metronome.Start();
     }
 
@@ -283,16 +257,12 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
             buffer = in.readLine();
             shards = buffer.split(" ");
-            BPM.setValue(Integer.parseInt(shards[0]));
-            Groove.setValue(Integer.parseInt(shards[1]));
-            beatCt.setText(shards[2]);
-            basDur.setText(shards[3]);
 
             metronome.Update(
-                    Integer.parseInt(beatCt.getText()),
-                    Integer.parseInt(basDur.getText()),
-                    (Integer) BPM.getValue(),
-                    (Float) Groove.getValue() / 100.0
+                    Integer.parseInt(shards[2]),
+                    Integer.parseInt(shards[3]),
+                    Integer.parseInt(shards[0]),
+                    Double.parseDouble(shards[1])
             );
 
             int i = -1;
@@ -362,10 +332,10 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
                 playSelect = 0;
                 break;
             case KeyEvent.VK_EQUALS:  /* +/- : increase/decrease BPM */
-                BPM.setValue(Integer.parseInt(BPM.getValue().toString())+1);
+                bpmControls.BpmAdd(1);
                 break;
             case KeyEvent.VK_MINUS:
-                BPM.setValue(Integer.parseInt(BPM.getValue().toString())-1);
+                bpmControls.BpmAdd(-1);
                 break;
             }
 
