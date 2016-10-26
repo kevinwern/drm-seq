@@ -1,5 +1,3 @@
-
-
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.util.LinkedList;
@@ -8,16 +6,10 @@ import javax.swing.BoxLayout;
 import javax.swing.SwingUtilities;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
-import java.applet.AudioClip;
-import java.applet.Applet;
-import java.io.File;
-import javax.swing.Timer;
 import java.net.MalformedURLException;
 
-class Staff extends JPanel implements MouseListener{
+class Staff extends JPanel implements MouseListener, MetronomeListener{
 
-    int vert,horiz,count;
-    Timer time;
     LinkedList<Row> rowList;
     Metronome metronome;
 
@@ -28,7 +20,7 @@ class Staff extends JPanel implements MouseListener{
         this.setPreferredSize(new Dimension(400,400));
         this.setSize(400,400);
 
-        for (int i = 0; i<rowList.size(); i++){
+        for (int i = 0; i <rowList.size(); i++){
             this.add(rowList.get(i));
             rowList.get(i).addMouseListener(this);
         }
@@ -56,6 +48,14 @@ class Staff extends JPanel implements MouseListener{
     public void mouseClicked(MouseEvent e){
 
     }
+
+    public void selectToPlay() {
+        metronome.RegisterObserver(this);
+    }
+
+    public void selectToStop() {
+        metronome.UnregisterObserver(this);
+    }
     
     public void reset(){
         for (int i = 0; i < rowList.size(); i++){
@@ -64,7 +64,7 @@ class Staff extends JPanel implements MouseListener{
     }   
 
     public void addSound(String fn,int length){
-        rowList.add(new Row(fn,length, this.metronome));
+        rowList.add(new Row(fn, length));
         this.add(rowList.get(rowList.size()-1));
         rowList.get(rowList.size()-1).addMouseListener(this);
         this.revalidate();
@@ -90,6 +90,12 @@ class Staff extends JPanel implements MouseListener{
             dumpString += rowList.get(i).dumpString() + "\n";
         }
         return dumpString;
+    }
+
+    public void trigger(int clickCount) {
+        for (Row row: rowList) {
+            row.light(clickCount);
+        }
     }
 
 }

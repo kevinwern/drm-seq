@@ -19,6 +19,7 @@ CLASSES = \
 	Staff.java \
 	Sound.java \
 	BpmControls.java \
+	Staffs.java \
 
 MAIN = Sequencer
 

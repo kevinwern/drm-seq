@@ -9,31 +9,21 @@ import javax.swing.JLabel;
 class Presets extends JPanel implements ActionListener{
 
     LinkedList<Preset> presets;
-    int selection;
-    int current;
-    int num;
+    Staffs staffs;
     
-    public Presets(){
-        Initialize();
-    }
-    public void Initialize(){
-        num = 8;
+    public Presets(Staffs staffs, int total){
+        this.staffs = staffs;
         presets = new LinkedList<Preset>();
         this.setLayout(new GridLayout(4,2));
-        selection = 1;
-        for (int i = 0; i<num; i++){
+        for (int i = 0; i < total; i++){
             presets.add(new Preset(i+1));
             this.add(presets.get(i));
             presets.get(i).addActionListener(this);
         }
-        
-    }
-    public void actionPerformed(ActionEvent e){
-        int newId = ((Preset) e.getSource()).getId();
-        selection = newId;
     }
 
-    public int getSelection(){
-        return selection;
+    public void actionPerformed(ActionEvent e){
+        int newId = ((Preset) e.getSource()).getId();
+        this.staffs.ShowById(newId - 1);
     }
 }

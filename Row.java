@@ -11,7 +11,7 @@ import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-class Row extends JPanel implements ActionListener, MetronomeListener {
+class Row extends JPanel implements ActionListener {
 
     LinkedList<Cell> cells;
     int numCells;
@@ -19,12 +19,8 @@ class Row extends JPanel implements ActionListener, MetronomeListener {
     boolean isMuted=false, isSoloed=false;
     Sound sound;
     String file;
-    Metronome metronome;
 
-    public Row(String filename, int length, Metronome metronome) {
-        
-        this.metronome = metronome;
-        metronome.RegisterObserver(this);
+    public Row(String filename, int length) {
 
         file = filename;
         cells = new LinkedList<Cell>();
@@ -45,8 +41,6 @@ class Row extends JPanel implements ActionListener, MetronomeListener {
         soloButton.setPreferredSize(new Dimension(15,15));
         soloButton.setFocusable(false);
         soloButton.addActionListener(this);
-
-//        this.setBackground(Color.black);
 
         this.setPreferredSize(new Dimension(400,20));
         this.add(soloButton);
@@ -102,11 +96,6 @@ class Row extends JPanel implements ActionListener, MetronomeListener {
 
     public void play(){
         sound.play();
-    }
-
-    public void trigger(int clickCount)
-    {
-        this.light(clickCount);
     }
 
     public void toggleMute(){
