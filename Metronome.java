@@ -118,6 +118,10 @@ public class Metronome implements ActionListener {
         registeredObservers.add(observer);
     }
 
+    public void UnregisterObserver(MetronomeListener observer) {
+        registeredObservers.remove(observer);
+    }
+
     public void NotifyObservers() {
         for (MetronomeListener observer : registeredObservers){
             observer.trigger(currentClick);
