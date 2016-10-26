@@ -142,14 +142,6 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         metronome.Start();
     }
 
-    public void createTopLabel(){
-
-    }
-
-    public void createBottomLabel(){
-        
-    }
-
     public void actionPerformed(ActionEvent e){
         if (e.getActionCommand().equals("about")){  /* Menu actions */
             showDialog();
