@@ -83,8 +83,8 @@ public class Metronome implements ActionListener {
         NotifyObservers();
         currentClick++;
         timer.setDelay(currentClick % 2 == 0
-                ? clickIntervals.GetIntervalOffBeat()
-                : clickIntervals.GetIntervalOnBeat());
+                ? clickIntervals.GetIntervalOnBeat()
+                : clickIntervals.GetIntervalOffBeat());
     }
 
     public void Update(int beatCount, int basicDuration, int beatsPerMinute,
