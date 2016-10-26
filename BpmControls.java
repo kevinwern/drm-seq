@@ -21,7 +21,6 @@ class BpmControls extends JPanel implements ChangeListener, DocumentListener {
 
     BpmControls(Metronome metronome) {
         this.metronome = metronome;
-        this.setSize(100, 100);
 
         beatCountTextField = new JTextField(Integer.toString(metronome.GetBeatCount()));
         basicDurationTextField = new JTextField(Integer.toString(metronome.GetBasicDuration()));
