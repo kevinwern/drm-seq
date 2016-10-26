@@ -102,11 +102,9 @@ class Row extends JPanel implements ActionListener {
         isMuted = !isMuted;
         if (isMuted ){
             muteButton.setForeground(Color.RED);
-//            muteButton.setBorder(new LineBorder(Color.RED,1));
         }
         else{
             muteButton.setForeground(Color.BLACK);
-//            muteButton.setBorder(new LineBorder(Color.BLACK,1));
         }
     }
 
