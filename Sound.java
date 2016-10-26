@@ -32,6 +32,7 @@ class Sound {
     }
 
     public void play(){ /* play sound */
+        clip.stop();
         clip.setFramePosition(0);
         clip.start();
     }
