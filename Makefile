@@ -17,7 +17,8 @@ CLASSES = \
 	Row.java \
 	ImageButton.java \
 	Staff.java \
-	Sound.java
+	Sound.java \
+        BpmControls.java \
 
 MAIN = Sequencer
 
