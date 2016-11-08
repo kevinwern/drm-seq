@@ -7,7 +7,7 @@ class FileMenu extends JMenuBar {
 
     JMenuItem file, help;
 
-    public void FileMenu(){
+    public FileMenu(){
         file = new JMenuItem("File");
         help  = new JMenuItem("Help");
         this.add(file);
