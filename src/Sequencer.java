@@ -1,19 +1,17 @@
-/***--------------------------------------------------------------------------------------------*  
+
+
+/***--------------------------------------------------------------------------------------------*
 DRM SEQ:                                                                                        |
 Author: Kevin Wern                                                                              |
 ---------------------------------------------------------------------------------------------***/
 
 //Sequencer.java: contains the main window and options, and establishes upper hierarchy of editing window
 
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
@@ -22,11 +20,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.FocusEvent;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class Sequencer extends JFrame implements ActionListener,KeyListener,MouseListener {
 
@@ -44,7 +38,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         Initialize();
     }
 
-    public Sequencer(String fn){      // Constructor for new files
+    public Sequencer(String fn) {      // Constructor for new files
         File baseFile = new File(fn);
     }
 
@@ -56,41 +50,41 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
         JButton loadSound = new JButton("Load Sound");                  /* Initialize Load Sound button */
         loadSound.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent E){
+            public void actionPerformed(ActionEvent E) {
                 int length = metronome.GetClicksPerCycle();
-                staffs.GetCurrentShowing().addSound(fileChoose.getSelectedItem().toString(),length);
+                staffs.GetCurrentShowing().addSound(fileChoose.getSelectedItem().toString(), length);
             }
         });
 
         ImageButton playButton = new ImageButton("Images/play.png");   //play, pause, and stop buttons
-        playButton.setPreferredSize(new Dimension(20,20));
+        playButton.setPreferredSize(new Dimension(20, 20));
         playButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent E){
+            public void actionPerformed(ActionEvent E) {
                 metronome.Start();
             }
         });
 
         ImageButton pauseButton = new ImageButton("Images/pause.png");
-        pauseButton.setPreferredSize(new Dimension(20,20));
+        pauseButton.setPreferredSize(new Dimension(20, 20));
         pauseButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent E){
+            public void actionPerformed(ActionEvent E) {
                 metronome.Stop();
             }
         });
 
 
         ImageButton stopButton = new ImageButton("Images/stop.png");
-        stopButton.setPreferredSize(new Dimension(20,20));
+        stopButton.setPreferredSize(new Dimension(20, 20));
         stopButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent E){
+            public void actionPerformed(ActionEvent E) {
                 metronome.Stop();
                 staffs.ResetCurrent();
             }
-        });  
+        });
 
         File temp = new File("Samples");    /* Samples Folder (located in %CHOSEN_DIRECTORY%/Samples) */
         fileChoose = new JComboBox<File>(temp.listFiles());
-        
+
         menuBar = new FileMenu();
 
         btmProperties = new JPanel();
@@ -105,10 +99,10 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         this.setJMenuBar(menuBar);
         this.setTitle("DRM SEQ");
         this.setLayout(new BorderLayout());
-        this.add(staffs ,BorderLayout.CENTER);
+        this.add(staffs, BorderLayout.CENTER);
         this.add(bpmControls, BorderLayout.NORTH);
-        this.add(btmProperties,BorderLayout.SOUTH);
-        this.add(presets,BorderLayout.EAST);
+        this.add(btmProperties, BorderLayout.SOUTH);
+        this.add(presets, BorderLayout.EAST);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.pack();
@@ -118,42 +112,39 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         metronome.Start();
     }
 
-    public void actionPerformed(ActionEvent e){
-        if (e.getActionCommand().equals("about")){  /* Menu actions */
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("about")) {  /* Menu actions */
             showDialog();
-        }
-        else if (e.getActionCommand().equals("save")){
+        } else if (e.getActionCommand().equals("save")) {
 //            saveFile();
-        }
-        else if (e.getActionCommand().equals("open")){
+        } else if (e.getActionCommand().equals("open")) {
 //            openFile();
-        }
-        else if (e.getActionCommand().equals("new")){
+        } else if (e.getActionCommand().equals("new")) {
             startNew();
         }
     }
 
-    public void startNew(){
+    public void startNew() {
         metronome.Stop();
         staffs.Clear();
         metronome.Update(4, 4, 120, 0.5);
         metronome.Start();
     }
 
-    public void showDialog(){   /* Help menu */
-        JOptionPane.showMessageDialog(this, 
-        "Created January and July 2013\n\n"+
-        "Some quick controls:\n" +
-        "Spacebar:\t\t\tStart from first beat.\n"+
-        "+/-:\t\t\tIncrease/Decrease BPM\n" +
-        "Right Click (on any Row): Delete that row\n"+
-        "1-8:                      Play corresponding bank from current point in measure\n\n"+
-        "Other helpful button info:\n"+
-        "Mute (M):                 Mute the given track\n"+
-        "Solo (S):                 Play only the soloed track(s)\n"+
-        "Play/Pause/Stop:          Seek through loop as desired\n",
-        "About DRM SEQ",
-        JOptionPane.INFORMATION_MESSAGE);
+    public void showDialog() {   /* Help menu */
+        JOptionPane.showMessageDialog(this,
+                "Created January and July 2013\n\n" +
+                        "Some quick controls:\n" +
+                        "Spacebar:\t\t\tStart from first beat.\n" +
+                        "+/-:\t\t\tIncrease/Decrease BPM\n" +
+                        "Right Click (on any Row): Delete that row\n" +
+                        "1-8:                      Play corresponding bank from current point in measure\n\n" +
+                        "Other helpful button info:\n" +
+                        "Mute (M):                 Mute the given track\n" +
+                        "Solo (S):                 Play only the soloed track(s)\n" +
+                        "Play/Pause/Stop:          Seek through loop as desired\n",
+                "About DRM SEQ",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
 //    public void saveFile(){
@@ -251,15 +242,15 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 //        } catch (IOException e) {}
 //    }
 
-    public void keyPressed(KeyEvent ke){  /* Hotkeys */
+    public void keyPressed(KeyEvent ke) {  /* Hotkeys */
 
-        switch (ke.getKeyCode()){     /* Space: Restart loop */
+        switch (ke.getKeyCode()) {     /* Space: Restart loop */
             case KeyEvent.VK_SPACE:
                 metronome.Stop();
                 staffs.ResetCurrent();
                 metronome.Reset();
                 break;
-                
+
             case KeyEvent.VK_8:    /* 1-8: select bank */
             case KeyEvent.VK_7:
             case KeyEvent.VK_6:
@@ -278,38 +269,35 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             case KeyEvent.VK_MINUS:
                 bpmControls.BpmAdd(-1);
                 break;
-            }
+        }
 
     }
 
-    public void keyReleased(KeyEvent k){
+    public void keyReleased(KeyEvent k) {
 
     }
 
-    public void keyTyped(KeyEvent k){
+    public void keyTyped(KeyEvent k) {
 
     }
 
-    public void mousePressed(MouseEvent e){
+    public void mousePressed(MouseEvent e) {
         requestFocus();
     }
 
-    public void mouseReleased(MouseEvent e){
+    public void mouseReleased(MouseEvent e) {
 
     }
 
-    public void mouseEntered(MouseEvent e){
+    public void mouseEntered(MouseEvent e) {
         requestFocus();
     }
 
-    public void mouseExited(MouseEvent e){
-
-    }
-    public void mouseClicked(MouseEvent e){
+    public void mouseExited(MouseEvent e) {
 
     }
 
-    public static void main(String[] args){  /* Initialize Sequencer */
-        Sequencer seq = new Sequencer();
+    public void mouseClicked(MouseEvent e) {
+
     }
 }

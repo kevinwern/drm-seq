@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import javax.swing.border.LineBorder;
 import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.event.ActionListener;
@@ -83,10 +82,9 @@ class Row extends JPanel implements ActionListener {
         if (index==0){
             cells.get(numCells-1).reset();
         }
-        else{
-            cells.get(index-1).reset();
+        else {
+            cells.get(index - 1).reset();
         }
-        if (cells.get(index).isLit() && !isMuted ) play();
     }
 
     void reset(){
@@ -94,8 +92,9 @@ class Row extends JPanel implements ActionListener {
         cells.get(i).reset();
     }
 
-    public void play(){
-        sound.play();
+    public void play(int index) {
+        if (cells.get(index).isLit() && !isMuted)
+            sound.play();
     }
 
     public void toggleMute(){

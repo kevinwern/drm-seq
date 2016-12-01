@@ -1,12 +1,12 @@
+
+
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.util.LinkedList;
 import java.awt.Color;
-import javax.swing.BoxLayout;
 import javax.swing.SwingUtilities;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
-import java.net.MalformedURLException;
 
 class Staff extends JPanel implements MouseListener, MetronomeListener{
 
@@ -93,6 +93,9 @@ class Staff extends JPanel implements MouseListener, MetronomeListener{
     }
 
     public void trigger(int clickCount) {
+        for (Row row: rowList) {
+            row.play(clickCount);
+        }
         for (Row row: rowList) {
             row.light(clickCount);
         }

@@ -1,10 +1,10 @@
+
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 import java.util.LinkedList;
 import java.awt.GridLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 
 class Presets extends JPanel implements ActionListener{
 
