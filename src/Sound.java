@@ -1,35 +1,33 @@
-/* Sound.java: simple interface for playing sounds
-*/
+/* Sound.java: simple interface for playing sounds */
 
-import javafx.scene.media.AudioClip;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.Line;
-import java.applet.Applet;
+import javax.sound.sampled.*;
 import java.io.File;
-import java.net.MalformedURLException;
 
 class Sound {
 
-    AudioClip clip;
+    Clip clip;
     String fileName;
 
-    public Sound (String fileName) {  /* create audio file handle */
+    public Sound (String fileName) {
         this.fileName = fileName;
         File file = new File(fileName);
         try {
-            this.clip = new AudioClip(file.toURI().toString());
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
+            AudioFormat format = audioInputStream.getFormat();
+            DataLine.Info	info = new DataLine.Info(Clip.class, format);
+            this.clip = (Clip) AudioSystem.getLine(info);
+            this.clip.open(audioInputStream);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void play() { /* play sound */
-        if (clip.isPlaying())
-            clip.stop();
-        clip.play();
+    public void play() {
+        clip.stop();
+        clip.flush();
+        clip.setFramePosition(0);
+        clip.start();
     }
 }
