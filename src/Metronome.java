@@ -53,7 +53,6 @@ public class Metronome implements ActionListener {
         clickIntervals = CalculateIntervals();
         clicksPerCycle = CalculateClicksPerCycle();
         timer = new Timer(clickIntervals.GetIntervalOnBeat(), this);
-        timer.start();
     }
 
     public int GetBeatCount() {
@@ -77,14 +76,18 @@ public class Metronome implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        timer.setDelay(currentClick % 2 == 0
-                ? clickIntervals.GetIntervalOnBeat()
-                : clickIntervals.GetIntervalOffBeat());
+        NotifyObservers();
+        currentClick++;
         if (currentClick >= clicksPerCycle) {
             currentClick = INITIAL_CLICK;
         }
-        NotifyObservers();
-        currentClick++;
+
+        // set "next" delay, because delay seems to be
+        // immutable after action is performed.
+        timer.setDelay(currentClick % 2 == 0
+                ? clickIntervals.GetIntervalOnBeat()
+                : clickIntervals.GetIntervalOffBeat());
+
     }
 
     public void Update(int beatCount, int basicDuration, int beatsPerMinute,
