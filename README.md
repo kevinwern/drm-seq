@@ -1,6 +1,7 @@
+
 # DRM-SEQ
 
-Drum Machine/sampler.
+Drum Machine/sampler (NOTE: currently being reworked for Mac compatibility).
 
 ## Requirements
 
