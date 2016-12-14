@@ -1,5 +1,5 @@
 #include "SoundHelpers.h"
-#include "SoundWrapper.h"
+#include "SoundEngine.h"
 
 void *create_sound(const char *filename) {
     return new SoundWrapper(filename);
