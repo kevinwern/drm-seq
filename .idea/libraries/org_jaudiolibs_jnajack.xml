@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="org-jaudiolibs-jnajack">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/org-jaudiolibs-jnajack.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

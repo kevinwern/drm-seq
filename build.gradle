@@ -1,0 +1,19 @@
+apply plugin: 'java'
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': 'Main'
+        )
+    }
+}
+
+task makeSoundHelpers(type:Exec) {
+    workingDir 'libs/soundhelpers'
+    commandLine 'make'
+}
+
+dependencies {
+    tasks.makeSoundHelpers.execute()
+}
