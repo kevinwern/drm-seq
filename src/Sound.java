@@ -2,7 +2,7 @@
 
 class Sound {
     static {
-        System.loadLibrary("sound");
+        System.loadLibrary("soundhelpers");
     }
 
     public Sound(String fileName) {
