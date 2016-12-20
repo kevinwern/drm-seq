@@ -1,13 +1,21 @@
-LDFLAGS=-L/opt/local/lib -L/Users/kwern/work/drm-seq/libs/rtaudio/lib
-LDLIBS=-lsndfile -lrtaudio -shared
-CXXFLAGS=-I/Users/kwern/work/drm-seq/libs/rtaudio/include/rtaudio/ -I/opt/local/include/
-CFLAGS=-I/Users/kwern/work/drm-seq/libs/rtaudio/include/rtaudio/ -I/opt/local/include/ -I /Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/include/ -I/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/include/darwin
+LDLIBS=-lsndfile -lrtaudio
 
 CFILES=$(wildcard *.c)
 CXXFILES=$(wildcard *.cpp)
 COBJECTS=$(patsubst %.c, %.o, $(CFILES))
 CXXOBJECTS=$(patsubst %.cpp, %.o, $(CXXFILES))
-LIBFILE=libsound.dylib
+
+ifeq ($(OS),Windows_NT)
+        LIBFILE=soundhelpers.dll
+else
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+        LIBFILE=libsoundhelpers.so
+    endif
+    ifeq ($(UNAME_S),Darwin)
+        LIBFILE=libsoundhelpers.dylib
+    endif
+endif
 
 all: $(LIBFILE)
 
