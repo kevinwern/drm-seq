@@ -1,5 +1,13 @@
 apply plugin: 'java'
 
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
+
 jar {
     manifest {
         attributes(
@@ -14,6 +22,14 @@ task makeSoundHelpers(type:Exec) {
     commandLine 'make'
 }
 
+task copySoundHelpers(type:Copy) {
+    from('libs/soundhelpers') {
+        include "**/*.so", "**/*.dylib", "**/*.dll"
+    }
+    into libsDir;
+}
+
 dependencies {
     tasks.makeSoundHelpers.execute()
+    tasks.copySoundHelpers.execute()
 }
