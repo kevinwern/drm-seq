@@ -1,0 +1,44 @@
+apply plugin: 'java'
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': 'Main'
+        )
+    }
+}
+
+task makeSoundHelpers(type:Exec) {
+    workingDir 'libs/soundhelpers'
+    commandLine 'make'
+}
+
+task copySoundHelpers(type:Copy) {
+    from('libs/soundhelpers') {
+        include "**/*.so", "**/*.dylib", "**/*.dll"
+    }
+    into libsDir;
+}
+
+task cleanSoundHelpers(type:Exec) {
+    workingDir 'libs/soundhelpers'
+    commandLine 'make' , 'clean'
+}
+
+clean.doLast {
+    tasks.cleanSoundHelpers.execute();
+}
+
+compileJava {
+    dependsOn tasks.makeSoundHelpers
+    dependsOn tasks.copySoundHelpers
+}

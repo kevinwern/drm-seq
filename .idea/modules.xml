@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/drm-seq.iml" filepath="$PROJECT_DIR$/drm-seq.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/drm-seq.iml" filepath="$PROJECT_DIR$/.idea/modules/drm-seq.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/drm-seq_main.iml" filepath="$PROJECT_DIR$/.idea/modules/drm-seq_main.iml" group="drm-seq" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/drm-seq_test.iml" filepath="$PROJECT_DIR$/.idea/modules/drm-seq_test.iml" group="drm-seq" />
     </modules>
   </component>
 </project>

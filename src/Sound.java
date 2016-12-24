@@ -1,33 +1,20 @@
-/* Sound.java: simple interface for playing sounds */
-
-
-import javax.sound.sampled.*;
-import java.io.File;
+/* Sound.java: native interface for C helper functions */
 
 class Sound {
+    static {
+        System.loadLibrary("soundhelpers");
+    }
 
-    Clip clip;
-    String fileName;
-
-    public Sound (String fileName) {
-        this.fileName = fileName;
-        File file = new File(fileName);
-        try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
-            AudioFormat format = audioInputStream.getFormat();
-            DataLine.Info	info = new DataLine.Info(Clip.class, format);
-            this.clip = (Clip) AudioSystem.getLine(info);
-            this.clip.open(audioInputStream);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+    public Sound(String fileName) {
+        pointer_cpp = initCpp(fileName);
     }
 
     public void play() {
-        clip.stop();
-        clip.flush();
-        clip.setFramePosition(0);
-        clip.start();
-    }
+        playCpp(pointer_cpp);
+    };
+
+    public native long initCpp(String fileName);
+    public native void playCpp(long pointer_cpp);
+
+    private long pointer_cpp;
 }
