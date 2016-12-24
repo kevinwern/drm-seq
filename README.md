@@ -2,7 +2,7 @@
 # DRM-SEQ
 
 (NOTE: currently being reworked for Mac compatibility).
-O
+
 Drum Machine/sampler created with Java and C++. Originally a project for
 my off time, the goal is to eventually integrate this with input so a
 person can map audio input (i.e. beatboxing) to real samples, and
@@ -41,14 +41,18 @@ that IDE.
 Build this project using gradle:
 
 Compilation:
+
 $ gradle build (if configuration fails, it is likely related to an error
   with the above)
 
 Execution:
+
 $ gradle jar
-# java -jar drm-seq.jar
+
+$ java -jar drm-seq.jar
 
 Clean:
+
 $ gradle clean
 
 ### C++ Helpers
