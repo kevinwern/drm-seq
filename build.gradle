@@ -29,7 +29,16 @@ task copySoundHelpers(type:Copy) {
     into libsDir;
 }
 
-dependencies {
-    tasks.makeSoundHelpers.execute()
-    tasks.copySoundHelpers.execute()
+task cleanSoundHelpers(type:Exec) {
+    workingDir 'libs/soundhelpers'
+    commandLine 'make' , 'clean'
+}
+
+clean.doLast {
+    tasks.cleanSoundHelpers.execute();
+}
+
+compileJava {
+    dependsOn tasks.makeSoundHelpers
+    dependsOn tasks.copySoundHelpers
 }
