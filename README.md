@@ -78,7 +78,9 @@ Create a row by selecting a sound using the drop down menu. ("Load Sound" button
 Click any of the cells to insert an instance of the sound there. Universally, you control:
 
 BPM: beats per minute
+
 Time Signature: feeling of the beat/beats per measure
+
 Groove: the "swing factor" of the notes. Above 50% gives more time to notes on
         the beat; below 50% gives more time to notes off the beat.
 
