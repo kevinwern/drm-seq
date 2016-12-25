@@ -41,7 +41,7 @@ public class Metronome implements ActionListener {
     private double swingFactor;
     /* The two alternating interval lengths */
     private TimerIntervalGroup clickIntervals;
-    private Timer timer;
+    private MultiIntervalTimer timer;
     private ArrayList<MetronomeListener> registeredObservers = new ArrayList<MetronomeListener>();
 
     public Metronome() {
@@ -52,7 +52,7 @@ public class Metronome implements ActionListener {
         currentClick = INITIAL_CLICK;
         clickIntervals = CalculateIntervals();
         clicksPerCycle = CalculateClicksPerCycle();
-        timer = new Timer(clickIntervals.GetIntervalOnBeat(), this);
+        timer = new MultiIntervalTimer(clickIntervals.GetIntervals(), this);
     }
 
     public int GetBeatCount() {
@@ -81,13 +81,6 @@ public class Metronome implements ActionListener {
         if (currentClick >= clicksPerCycle) {
             currentClick = INITIAL_CLICK;
         }
-
-        // set "next" delay, because delay seems to be
-        // immutable after action is performed.
-        timer.setDelay(currentClick % 2 == 0
-                ? clickIntervals.GetIntervalOnBeat()
-                : clickIntervals.GetIntervalOffBeat());
-
     }
 
     public void Update(int beatCount, int basicDuration, int beatsPerMinute,
@@ -115,6 +108,7 @@ public class Metronome implements ActionListener {
         this.swingFactor = swingFactor;
         this.clicksPerCycle = CalculateClicksPerCycle();
         this.clickIntervals = CalculateIntervals();
+        this.timer.updateIntervals(this.clickIntervals.GetIntervals());
     }
 
     public void RegisterObserver(MetronomeListener observer) {
@@ -141,6 +135,7 @@ public class Metronome implements ActionListener {
 
     public void Reset() {
         timer.stop();
+        timer.reset();
         currentClick = INITIAL_CLICK;
         timer.start();
     }
@@ -189,12 +184,6 @@ public class Metronome implements ActionListener {
             this.intervalOffBeat = intervalOffBeat;
         }
 
-        int GetIntervalOnBeat(){
-            return intervalOnBeat;
-        }
-
-        int GetIntervalOffBeat(){
-            return intervalOffBeat;
-        }
+        int[] GetIntervals() { return new int[] {intervalOnBeat, intervalOffBeat}; }
     }
 }
