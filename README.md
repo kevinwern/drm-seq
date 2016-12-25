@@ -10,9 +10,11 @@ quickly create loops or improvise during a show.
 
 ## Requirements
 
-libsndfile (with C++ wrappers)
-rtaudio
-java >= 1.6 (with JNI libraries)
+[libsndfile, with C++ wrappers (version 1.0.17 or later)](http://www.mega-nerd.com/libsndfile/)
+
+[rtaudio](https://www.music.mcgill.ca/~gary/rtaudio/)
+
+java >= 1.6 (with JNI)
 
 ## Overview
 
@@ -31,7 +33,9 @@ that IDE.
    the following environment variables:
 
    LDFLAGS: The search location for your libraries binaries.
+
    CFLAGS: The search location for C includes (in this case, JNI).
+
    CXXFLAGS: The search location for C++ includes.
 
 ## Build
