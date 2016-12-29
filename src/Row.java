@@ -1,21 +1,14 @@
-//Kevin Wern
-//Defines a single row in the Staff class
-
-import java.util.LinkedList;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import java.awt.Dimension;
-import java.awt.Color;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.LinkedList;
 
-class Row extends JPanel implements ActionListener {
-
+public class Row extends JPanel implements ActionListener {
     LinkedList<Cell> cells;
     int numCells;
     int litCell = -1;
-    JButton muteButton,soloButton;
+    JButton muteButton, soloButton;
     boolean isMuted=false, isSoloed=false;
     Sound sound;
     String file;
@@ -33,16 +26,19 @@ class Row extends JPanel implements ActionListener {
         String[] strFragments = filename.split("/");
         JLabel tag = new JLabel(strFragments[strFragments.length-1],JLabel.CENTER);
         tag.setPreferredSize(new Dimension(100,10));
+
         muteButton = new JButton("M");
         muteButton.setPreferredSize(new Dimension(15,15));
         muteButton.setFocusable(false);
         muteButton.addActionListener(this);
+
         soloButton = new JButton("S");
         soloButton.setPreferredSize(new Dimension(15,15));
         soloButton.setFocusable(false);
         soloButton.addActionListener(this);
 
-        this.setPreferredSize(new Dimension(400,20));
+        this.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
+        this.setMinimumSize(new Dimension(400,20));
         this.add(soloButton);
         this.add(muteButton);
         this.add(tag);
@@ -52,7 +48,6 @@ class Row extends JPanel implements ActionListener {
     }
 
     public void setLength(int length) {
-        boolean activeDataExists = false;
         if (length>numCells){
             for (int i = numCells; i<length; i++){
                 if (i < cells.size()) {
@@ -66,6 +61,7 @@ class Row extends JPanel implements ActionListener {
             }
         }
         else if (length<numCells) {
+            boolean activeDataExists = false;
             for (int i=cells.size() - 1;i >= length; i--){
                 if (cells.get(i).isLit()) {
                     activeDataExists = true;
@@ -105,7 +101,7 @@ class Row extends JPanel implements ActionListener {
 
     void reset(){
         for (int i = 0; i<numCells; i++)
-        cells.get(i).reset();
+            cells.get(i).reset();
         litCell = -1;
     }
 
@@ -154,13 +150,13 @@ class Row extends JPanel implements ActionListener {
 
         if (isSoloed) dumpedString += "S ";
         else dumpedString += "s ";
- 
-       for (int i = 0; i<numCells; i++){
-           if (cells.get(i).isLit())
-               dumpedString +="1";
-           else
-               dumpedString +="0";
-       }
-        return dumpedString; 
+
+        for (int i = 0; i<numCells; i++){
+            if (cells.get(i).isLit())
+                dumpedString +="1";
+            else
+                dumpedString +="0";
+        }
+        return dumpedString;
     }
 }

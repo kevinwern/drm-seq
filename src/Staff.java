@@ -1,10 +1,8 @@
 
 
-import javax.swing.JPanel;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.util.LinkedList;
-import java.awt.Color;
-import javax.swing.SwingUtilities;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 
@@ -12,24 +10,29 @@ class Staff extends JPanel implements MouseListener, MetronomeListener{
 
     LinkedList<Row> rowList;
     Metronome metronome;
+    GridBagConstraints constraints;
 
     public Staff(Metronome metronome){
         this.metronome = metronome;
         this.setBackground(Color.gray);
         rowList = new LinkedList<Row>();
-        this.setPreferredSize(new Dimension(400,400));
-        this.setSize(400,400);
+        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
         for (int i = 0; i <rowList.size(); i++){
-            this.add(rowList.get(i));
+            JPanel pane = new JPanel();
+            pane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+            pane.setMinimumSize(new Dimension(400,25));
+            pane.add(rowList.get(i));
+            this.add(pane);
             rowList.get(i).addMouseListener(this);
         }
     }
     
     public void mousePressed(MouseEvent e){
-        if (SwingUtilities.isRightMouseButton(e)){
-            this.remove((Row) e.getSource());
-            rowList.remove(e.getSource());
+        if (SwingUtilities.isRightMouseButton(e) && e.getSource() instanceof Row){
+            Row source = (Row) e.getSource();
+            this.remove(source.getParent());
+            rowList.remove(source);
             this.revalidate();
             this.repaint();
         }
@@ -65,7 +68,12 @@ class Staff extends JPanel implements MouseListener, MetronomeListener{
 
     public void addSound(String fn,int length){
         rowList.add(new Row(fn, length));
-        this.add(rowList.get(rowList.size()-1));
+        JPanel pane = new JPanel();
+        pane.setBackground(Color.gray);
+        pane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+        pane.setMinimumSize(new Dimension(400,25));
+        pane.add(rowList.get(rowList.size()-1));
+        this.add(pane);
         rowList.get(rowList.size()-1).addMouseListener(this);
         this.revalidate();
         this.repaint();

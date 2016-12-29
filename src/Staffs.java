@@ -15,7 +15,6 @@ class Staffs extends JPanel {
     Staffs(Metronome metronome, int total, int selected) {
         this.metronome = metronome;
         cardLayout = new CardLayout();
-        this.setPreferredSize(new Dimension(PANEL_LENGTH, PANEL_HEIGHT));
         this.setLayout(cardLayout);
         this.staffList = new ArrayList<Staff>();
         Initialize(total);

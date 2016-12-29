@@ -7,11 +7,7 @@ Author: Kevin Wern                                                              
 
 //Sequencer.java: contains the main window and options, and establishes upper hierarchy of editing window
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
@@ -33,6 +29,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     JComboBox<File> fileChoose;                                        // File ComboBox
     FileMenu menuBar;
     Metronome metronome;
+    JScrollPane scrollPane = new JScrollPane();
 
     public Sequencer() {  //Default constructor
         Initialize();
@@ -99,7 +96,8 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         this.setJMenuBar(menuBar);
         this.setTitle("DRM SEQ");
         this.setLayout(new BorderLayout());
-        this.add(staffs, BorderLayout.CENTER);
+        scrollPane.setViewportView(staffs);
+        this.add(scrollPane, BorderLayout.CENTER);
         this.add(bpmControls, BorderLayout.NORTH);
         this.add(btmProperties, BorderLayout.SOUTH);
         this.add(presets, BorderLayout.EAST);
