@@ -13,18 +13,20 @@ class BpmControls extends JPanel implements ChangeListener, DocumentListener {
     JSpinner bpmSpinner, swingFactorSpinner;
     JTextField beatCountTextField, basicDurationTextField;
     Metronome metronome;
+    Staffs staffs;
 
     JLabel bpmLabel = new JLabel("BPM");
     JLabel timeSignatureLabel = new JLabel("Time Signature");
     JLabel swingFactorLabel = new JLabel("Groove (%):");
     JLabel slash = new JLabel("/");
 
-    BpmControls(Metronome metronome) {
+    BpmControls(Metronome metronome, Staffs staffs) {
         this.metronome = metronome;
+        this.staffs = staffs;
 
         beatCountTextField = new JTextField(Integer.toString(metronome.GetBeatCount()));
         basicDurationTextField = new JTextField(Integer.toString(metronome.GetBasicDuration()));
-        bpmSpinner = new JSpinner(new SpinnerNumberModel(metronome.GetBeatsPerMinute(), 1, 240, 1));
+        bpmSpinner = new JSpinner(new SpinnerNumberModel(metronome.GetBeatsPerMinute(), 1, Metronome.MAX_BPM, 1));
         swingFactorSpinner = new JSpinner(new SpinnerNumberModel((int) (metronome.GetSwingFactor() * 100), 1, 100, 1));
 
         beatCountTextField.getDocument().addDocumentListener(this);
@@ -55,19 +57,35 @@ class BpmControls extends JPanel implements ChangeListener, DocumentListener {
         );
     }
 
-    public void stateChanged(ChangeEvent e) {
-        this.UpdateMetronome();
+    public void UpdateStaffs() {
+        for (Staff s: staffs.staffList) {
+            int beatCount = Integer.parseInt(beatCountTextField.getText());
+            int basicDuration = Integer.parseInt(basicDurationTextField.getText());
+            int multiplierToSixteenths = 16 / basicDuration;
+            s.setLength(beatCount * multiplierToSixteenths);
+        }
     }
 
-    public void changedUpdate(DocumentEvent e) {
+    public void Update() {
         this.UpdateMetronome();
+        this.UpdateStaffs();
+        staffs.revalidate();
+        staffs.repaint();
+        this.revalidate();
+        this.repaint();
+    }
+
+    public void stateChanged(ChangeEvent e) { this.Update(); }
+
+    public void changedUpdate(DocumentEvent e) {
+        this.Update();
     }
 
     public void removeUpdate(DocumentEvent e) {
-        this.UpdateMetronome();
+        this.Update();
     }
 
     public void insertUpdate(DocumentEvent e) {
-        this.UpdateMetronome();
+        this.Update();
     }
 }

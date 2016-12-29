@@ -45,7 +45,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     public void Initialize() {
         metronome = new Metronome();
         staffs = new Staffs(metronome, TOTAL_PRESETS, 0);
-        bpmControls = new BpmControls(this.metronome);
+        bpmControls = new BpmControls(this.metronome, this.staffs);
         presets = new Presets(staffs, TOTAL_PRESETS);
 
         JButton loadSound = new JButton("Load Sound");                  /* Initialize Load Sound button */

@@ -14,6 +14,7 @@ class Row extends JPanel implements ActionListener {
 
     LinkedList<Cell> cells;
     int numCells;
+    int litCell = -1;
     JButton muteButton,soloButton;
     boolean isMuted=false, isSoloed=false;
     Sound sound;
@@ -51,17 +52,31 @@ class Row extends JPanel implements ActionListener {
     }
 
     public void setLength(int length) {
+        boolean activeDataExists = false;
         if (length>numCells){
-            for (int i=cells.size();i<length; i++){
-                Cell addCell = new Cell();
-                this.add(addCell);
-                cells.add(addCell);
+            for (int i = numCells; i<length; i++){
+                if (i < cells.size()) {
+                    cells.get(i).activate();
+                }
+                else {
+                    Cell addCell = new Cell();
+                    this.add(addCell);
+                    cells.add(addCell);
+                }
             }
         }
         else if (length<numCells) {
-            for (int i=cells.size();i>length; i--){
-                this.remove(cells.get(cells.size()-1));
-                cells.remove(cells.size()-1);
+            for (int i=cells.size() - 1;i >= length; i--){
+                if (cells.get(i).isLit()) {
+                    activeDataExists = true;
+                }
+                if (activeDataExists) {
+                    cells.get(i).deactivate();
+                }
+                else {
+                    this.remove(cells.get(i));
+                    cells.remove(i);
+                }
             }
         }
         this.revalidate();
@@ -78,22 +93,24 @@ class Row extends JPanel implements ActionListener {
     }
 
     public void light(int index){
+        if (index >= cells.size()) {
+            return;
+        }
         cells.get(index).highlight();
-        if (index==0){
-            cells.get(numCells-1).reset();
+        if (litCell >= 0) {
+            cells.get(litCell).reset();
         }
-        else {
-            cells.get(index - 1).reset();
-        }
+        litCell = index;;
     }
 
     void reset(){
         for (int i = 0; i<numCells; i++)
         cells.get(i).reset();
+        litCell = -1;
     }
 
     public void play(int index) {
-        if (cells.get(index).isLit() && !isMuted)
+        if (index < cells.size() && cells.get(index).isLit() && !isMuted)
             sound.play();
     }
 

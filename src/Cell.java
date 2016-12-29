@@ -32,6 +32,24 @@ class Cell extends JPanel implements MouseListener {
             this.setBackground(Color.green);
     }
 
+    public void deactivate() {
+        if (isLit) {
+            this.setBackground(Color.lightGray);
+        }
+        else {
+            this.setBackground(Color.darkGray);
+        }
+    }
+
+    public void activate() {
+        if (isLit) {
+            this.setBackground(Color.red);
+        }
+        else {
+            this.setBackground(Color.black);
+        }
+    }
+
     public void mousePressed(MouseEvent e){
 
     }
