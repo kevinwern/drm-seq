@@ -8,6 +8,9 @@ Author: Kevin Wern                                                              
 //Sequencer.java: contains the main window and options, and establishes upper hierarchy of editing window
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
@@ -26,10 +29,10 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     Staffs staffs;
     Presets presets;
     JPanel center, btmProperties;
-    JComboBox<File> fileChoose;                                        // File ComboBox
     FileMenu menuBar;
     Metronome metronome;
     JScrollPane scrollPane = new JScrollPane();
+    FileTree tree;
 
     public Sequencer() {  //Default constructor
         Initialize();
@@ -44,14 +47,6 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         staffs = new Staffs(metronome, TOTAL_PRESETS, 0);
         bpmControls = new BpmControls(this.metronome, this.staffs);
         presets = new Presets(staffs, TOTAL_PRESETS);
-
-        JButton loadSound = new JButton("Load Sound");                  /* Initialize Load Sound button */
-        loadSound.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent E) {
-                int length = metronome.GetClicksPerCycle();
-                staffs.GetCurrentShowing().addSound(fileChoose.getSelectedItem().toString(), length);
-            }
-        });
 
         ImageButton playButton = new ImageButton("Images/play.png");   //play, pause, and stop buttons
         playButton.setPreferredSize(new Dimension(20, 20));
@@ -79,8 +74,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             }
         });
 
-        File temp = new File("Samples");    /* Samples Folder (located in %CHOSEN_DIRECTORY%/Samples) */
-        fileChoose = new JComboBox<File>(temp.listFiles());
+        File sampleFile = new File("Samples");    /* Samples Folder (located in %CHOSEN_DIRECTORY%/Samples) */
 
         menuBar = new FileMenu();
 
@@ -88,8 +82,9 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         btmProperties.add(playButton);
         btmProperties.add(pauseButton);
         btmProperties.add(stopButton);
-        btmProperties.add(fileChoose);
-        btmProperties.add(loadSound);
+
+        tree = new FileTree(sampleFile);
+        tree.addMouseListener(this);
 
         this.addKeyListener(this);
         this.addMouseListener(this);
@@ -100,6 +95,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         this.add(scrollPane, BorderLayout.CENTER);
         this.add(bpmControls, BorderLayout.NORTH);
         this.add(btmProperties, BorderLayout.SOUTH);
+        this.add(tree, BorderLayout.WEST);
         this.add(presets, BorderLayout.EAST);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -280,6 +276,15 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     }
 
     public void mousePressed(MouseEvent e) {
+        int selRow = tree.getRowForLocation(e.getX(), e.getY());
+        TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+        if(selRow != -1) {
+            if(e.getClickCount() == 2) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath.getPathComponent(selPath.getPathCount() - 1);
+                File soundFile = (File) node.getUserObject();
+                staffs.GetCurrentShowing().addSound(soundFile.getAbsolutePath(), metronome.GetClicksPerCycle());
+            }
+        }
         requestFocus();
     }
 
