@@ -8,7 +8,6 @@ Author: Kevin Wern                                                              
 //Sequencer.java: contains the main window and options, and establishes upper hierarchy of editing window
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.Dimension;

@@ -2,13 +2,18 @@
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
+import java.util.Set;
 
 class Staff extends JPanel implements MouseListener, MetronomeListener{
 
     LinkedList<Row> rowList;
+    Set<Row> soloRows = new HashSet<Row>();
+    Set<Row> mutedRows = new HashSet<Row>();
+
     Metronome metronome;
     GridBagConstraints constraints;
 
@@ -39,7 +44,6 @@ class Staff extends JPanel implements MouseListener, MetronomeListener{
     }
 
     public void mouseReleased(MouseEvent e){
-
     }
 
     public void mouseEntered(MouseEvent e){
@@ -67,7 +71,7 @@ class Staff extends JPanel implements MouseListener, MetronomeListener{
     }   
 
     public void addSound(String fn,int length){
-        rowList.add(new Row(fn, length));
+        rowList.add(new Row(fn, length, this));
         JPanel pane = new JPanel();
         pane.setBackground(Color.gray);
         pane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
@@ -101,12 +105,29 @@ class Staff extends JPanel implements MouseListener, MetronomeListener{
     }
 
     public void trigger(int clickCount) {
-        for (Row row: rowList) {
+        Iterable<Row> rowsToPlay = soloRows.isEmpty() ? rowList : soloRows;
+        for (Row row: rowsToPlay) {
             row.play(clickCount);
         }
         for (Row row: rowList) {
             row.light(clickCount);
         }
+    }
+
+    public void addSoloTrack(Row row) {
+        soloRows.add(row);
+    }
+
+    public void removeSoloTrack(Row row) {
+        soloRows.remove(row);
+    }
+
+    public void addMutedTrack(Row row) {
+        mutedRows.add(row);
+    }
+
+    public void removeMutedTrack(Row row) {
+        mutedRows.remove(row);
     }
 
 }

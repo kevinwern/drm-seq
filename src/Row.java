@@ -9,13 +9,15 @@ public class Row extends JPanel implements ActionListener {
     int numCells;
     int litCell = -1;
     JButton muteButton, soloButton;
-    boolean isMuted=false, isSoloed=false;
+    boolean isMuted = false, isSoloed = false;
     Sound sound;
     String file;
+    Staff parent;
 
-    public Row(String filename, int length) {
+    public Row(String filename, int length, Staff parent) {
 
         file = filename;
+        this.parent = parent;
         cells = new LinkedList<Cell>();
         for (int i = 0; i<length; i++){
             cells.add(new Cell());
@@ -26,12 +28,10 @@ public class Row extends JPanel implements ActionListener {
         String[] strFragments = filename.split("/");
         JLabel tag = new JLabel(strFragments[strFragments.length-1],JLabel.CENTER);
         tag.setPreferredSize(new Dimension(100,10));
-
         muteButton = new JButton("M");
         muteButton.setPreferredSize(new Dimension(15,15));
         muteButton.setFocusable(false);
         muteButton.addActionListener(this);
-
         soloButton = new JButton("S");
         soloButton.setPreferredSize(new Dimension(15,15));
         soloButton.setFocusable(false);
@@ -84,10 +84,6 @@ public class Row extends JPanel implements ActionListener {
         return numCells;
     }
 
-    public Cell getCell(int index){
-        return cells.get(index);
-    }
-
     public void light(int index){
         if (index >= cells.size()) {
             return;
@@ -112,25 +108,32 @@ public class Row extends JPanel implements ActionListener {
 
     public void toggleMute(){
         isMuted = !isMuted;
-        if (isMuted ){
+        if (isMuted){
+            parent.addMutedTrack(this);
             muteButton.setForeground(Color.RED);
         }
         else{
+            parent.removeMutedTrack(this);
             muteButton.setForeground(Color.BLACK);
         }
     }
 
     public void toggleSolo(){
         isSoloed = !isSoloed;
-        if (isSoloed)
+        if (isSoloed) {
+            parent.addSoloTrack(this);
             soloButton.setForeground(Color.YELLOW);
-        else
+        }
+        else {
+            parent.removeSoloTrack(this);
             soloButton.setForeground(Color.BLACK);
+        }
     }
 
     public void actionPerformed(ActionEvent e){
-        if (e.getSource().equals(muteButton))
+        if (e.getSource().equals(muteButton)) {
             toggleMute();
+        }
         if (e.getSource().equals(soloButton))
             toggleSolo();
     }
