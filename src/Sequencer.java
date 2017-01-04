@@ -1,5 +1,3 @@
-
-
 /***--------------------------------------------------------------------------------------------*
 DRM SEQ:                                                                                        |
 Author: Kevin Wern                                                                              |
@@ -8,6 +6,7 @@ Author: Kevin Wern                                                              
 //Sequencer.java: contains the main window and options, and establishes upper hierarchy of editing window
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.Dimension;
@@ -18,7 +17,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
-import java.io.File;
+import java.io.*;
 
 public class Sequencer extends JFrame implements ActionListener,KeyListener,MouseListener {
 
@@ -35,10 +34,6 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
     public Sequencer() {  //Default constructor
         Initialize();
-    }
-
-    public Sequencer(String fn) {      // Constructor for new files
-        File baseFile = new File(fn);
     }
 
     public void Initialize() {
@@ -76,6 +71,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         File sampleFile = new File("Samples");    /* Samples Folder (located in %CHOSEN_DIRECTORY%/Samples) */
 
         menuBar = new FileMenu();
+        menuBar.addActionListener(this);
 
         btmProperties = new JPanel();
         btmProperties.add(playButton);
@@ -106,13 +102,13 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     }
 
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("about")) {  /* Menu actions */
+        if (e.getActionCommand().equals("About")) {  /* Menu actions */
             showDialog();
-        } else if (e.getActionCommand().equals("save")) {
-//            saveFile();
-        } else if (e.getActionCommand().equals("open")) {
-//            openFile();
-        } else if (e.getActionCommand().equals("new")) {
+        } else if (e.getActionCommand().equals("Save")) {
+            saveFile();
+        } else if (e.getActionCommand().equals("Open")) {
+            openFile();
+        } else if (e.getActionCommand().equals("New")) {
             startNew();
         }
     }
@@ -140,100 +136,71 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
-//    public void saveFile(){
-//        JFileChooser saveDialog = new JFileChooser();
-//        saveDialog.addChoosableFileFilter(new FileNameExtensionFilter("drm","drm"));
-//        int result=saveDialog.showSaveDialog(this);
-//        if(result == JFileChooser.APPROVE_OPTION) {
-//            writeFile(saveDialog.getSelectedFile());
-//        }
-//    }
-//
-//    public void writeFile(File f){   /* save file */
-//        if (!f.exists()) {
-//            int beatsPerMinute = metronome.GetBeatsPerMinute();
-//            double swingFactor = metronome.GetSwingFactor();
-//            int beatCount = metronome.GetBeatCount();
-//            int basicDuration = metronome.GetBasicDuration();
-//
-//            String toWrite = beatsPerMinute + " " + swingFactor + " " + beatCount + " " + basicDuration + "\n";
-//            for (int i = 0; i < staffList.size(); i++){
-//                toWrite+=i + "\n" + staffList.get(i).dumpString(); /* Dump string for each staff bank */
-//            }
-//            
-//            try
-//            {
-//                FileWriter o1 = new FileWriter(f);
-//                o1.write(toWrite);
-//                o1.flush();
-//                o1.close();
-//            }
-//            catch (IOException e) {}
-//        }
-//
-//        else {
-//            JOptionPane.showMessageDialog(this,"File already exists. Stopped writing.", "File Exists",JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
-//
-//    public void openFile(){
-//        JFileChooser openDialog = new JFileChooser();
-//        openDialog.addChoosableFileFilter(new FileNameExtensionFilter("drm","drm"));
-//        int result = openDialog.showOpenDialog(this);
-//        if (result == JFileChooser.APPROVE_OPTION) {
-//            readFile(openDialog.getSelectedFile());
-//        }
-//    }
-//
-//    public void readFile(File f){
-//        try {
-//            BufferedReader in = new BufferedReader(new FileReader(f));
-//            String buffer;
-//            String[] shards;
-//
-//            for (int i = 0; i < TOTAL_PRESETS; i++){
-//                center.remove(staffList.get(i));
-//            }
-//            staffList.clear();
-//            for (int i = 0; i < TOTAL_PRESETS; i++){
-//                staffList.add(new Staff(this.metronome));
-//                center.add(staffList.get(i),""+i);
-//            }
-//
-//            buffer = in.readLine();
-//            shards = buffer.split(" ");
-//
-//            metronome.Update(
-//                    Integer.parseInt(shards[2]),
-//                    Integer.parseInt(shards[3]),
-//                    Integer.parseInt(shards[0]),
-//                    Double.parseDouble(shards[1])
-//            );
-//
-//            int i = -1;
-//            while ((buffer = in.readLine()) != null){
-//                shards = buffer.split(" ");
-//                if (shards.length == 1) {
-//                   i++;
-//                   continue;
-//                }
-//
-//                else if (shards.length == 3) {
-//                   staffList.get(i).addSound(shards[0], metronome.GetClicksPerCycle());
-//                   if (shards[1].contains("M")){
-//                       staffList.get(i).rowList.get(staffList.get(i).rowList.size()-1).toggleMute();
-//                   }
-//                   if (shards[1].contains("S")){
-//                       staffList.get(i).rowList.get(staffList.get(i).rowList.size()-1).toggleSolo();
-//                   }
-//                   for (int j = 0; j < metronome.GetClicksPerCycle(); j++){
-//                       if (shards[2].charAt(j)=='1')
-//                           staffList.get(i).rowList.get(staffList.get(i).rowList.size()-1).cells.get(j).toggleLight();
-//                   }
-//                }
-//            }
-//        } catch (IOException e) {}
-//    }
+    public void saveFile(){
+        JFileChooser saveDialog = new JFileChooser();
+        saveDialog.addChoosableFileFilter(new FileNameExtensionFilter("drm","drm"));
+        int result=saveDialog.showSaveDialog(this);
+        if(result == JFileChooser.APPROVE_OPTION) {
+            writeFile(saveDialog.getSelectedFile());
+        }
+    }
+
+    public void writeFile(File f) {
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(f);
+        } catch (FileNotFoundException e) {
+            System.out.println(e);
+            return;
+        }
+
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            for (Staff staff : staffs.staffList) {
+                oos.writeObject(staff);
+            }
+        } catch (IOException e) {
+                System.out.println(e);
+                return;
+        }
+    }
+
+
+    public void openFile(){
+        JFileChooser openDialog = new JFileChooser();
+        openDialog.addChoosableFileFilter(new FileNameExtensionFilter("drm","drm"));
+        int result = openDialog.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            readFile(openDialog.getSelectedFile());
+        }
+    }
+
+    public void readFile(File f) {
+        staffs.Clear();
+        int i = 0;
+        try {
+            FileInputStream fis = new FileInputStream(f);
+            ObjectInputStream oos = new ObjectInputStream(fis);
+            while (true) {
+                Staff nextStaff = (Staff) oos.readObject();
+                if (nextStaff == null)
+                    break;
+                else {
+                    staffs.staffList.set(i, nextStaff);
+                    staffs.add(nextStaff, Integer.toString(i));
+                    metronome.RegisterObserver(nextStaff);
+                    System.out.println(i);
+                    i++;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+        } catch (ClassNotFoundException e) {
+            System.out.println(e);
+        }
+        staffs.revalidate();
+        staffs.repaint();
+    }
 
     public void keyPressed(KeyEvent ke) {  /* Hotkeys */
 

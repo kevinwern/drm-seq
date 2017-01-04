@@ -6,8 +6,9 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 
-class Cell extends JPanel implements MouseListener {
+class Cell extends JPanel implements MouseListener, Serializable {
 
     boolean isLit;    /* Defines if a cell is selected or not */
 

@@ -2,13 +2,16 @@
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.util.Set;
 
-class Staff extends JPanel implements MouseListener, MetronomeListener{
+class Staff extends JPanel implements MouseListener, MetronomeListener, Serializable {
 
     LinkedList<Row> rowList;
     Set<Row> soloRows = new HashSet<Row>();
@@ -95,14 +98,6 @@ class Staff extends JPanel implements MouseListener, MetronomeListener{
             return 0;
     }
 
-    public String dumpString(){
-        String dumpString="";
-        for (int i = 0; i<rowList.size(); i++){
-            dumpString += rowList.get(i).dumpString() + "\n";
-        }
-        return dumpString;
-    }
-
     public void trigger(int clickCount) {
         Iterable<Row> rowsToPlay = soloRows.isEmpty() ? rowList : soloRows;
         for (Row row: rowsToPlay) {
@@ -128,5 +123,4 @@ class Staff extends JPanel implements MouseListener, MetronomeListener{
     public void removeMutedTrack(Row row) {
         mutedRows.remove(row);
     }
-
 }

@@ -1,8 +1,9 @@
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serializable;
 
-public class MultiIntervalTimer implements ActionListener {
+public class MultiIntervalTimer implements ActionListener, Serializable {
 
     int intervals[];
     int intervalCount = 0;

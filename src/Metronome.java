@@ -6,12 +6,13 @@
 // resulting pulse.
 
 import javax.swing.Timer;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.IllegalArgumentException;
 
-public class Metronome implements ActionListener {
+public class Metronome implements ActionListener, Serializable {
     public static final int  MAX_BPM = 240;
     public static final int  MIN_BPM = 30;
     public static final int  MAX_BEAT_COUNT = 12;
@@ -175,7 +176,7 @@ public class Metronome implements ActionListener {
     }
 
     // Represents the alternating intervals, taking swing factor into account.
-    private class TimerIntervalGroup {
+    private class TimerIntervalGroup implements Serializable {
         int intervalOnBeat;
         int intervalOffBeat;
 

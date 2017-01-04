@@ -2,15 +2,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.LinkedList;
 
-public class Row extends JPanel implements ActionListener {
+public class Row extends JPanel implements ActionListener, Serializable {
     LinkedList<Cell> cells;
     int numCells;
     int litCell = -1;
     JButton muteButton, soloButton;
     boolean isMuted = false, isSoloed = false;
-    Sound sound;
+    transient Sound sound;
     String file;
     Staff parent;
 
@@ -146,20 +149,10 @@ public class Row extends JPanel implements ActionListener {
         return isSoloed;
     }
 
-    public String dumpString(){
-        String dumpedString = file;
-        if (isMuted) dumpedString += " M";
-        else dumpedString += " m";
-
-        if (isSoloed) dumpedString += "S ";
-        else dumpedString += "s ";
-
-        for (int i = 0; i<numCells; i++){
-            if (cells.get(i).isLit())
-                dumpedString +="1";
-            else
-                dumpedString +="0";
-        }
-        return dumpedString;
+    private void readObject(ObjectInputStream inputStream)
+            throws IOException, ClassNotFoundException
+    {
+        inputStream.defaultReadObject();
+        this.sound = new Sound(file);
     }
 }

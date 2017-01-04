@@ -17,4 +17,5 @@ class Sound {
     public native void playCpp(long pointer_cpp);
 
     private long pointer_cpp;
+
 }
