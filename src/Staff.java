@@ -15,7 +15,6 @@ class Staff extends JPanel implements MouseListener, MetronomeListener{
     Set<Row> mutedRows = new HashSet<Row>();
 
     Metronome metronome;
-    GridBagConstraints constraints;
 
     public Staff(Metronome metronome){
         this.metronome = metronome;
