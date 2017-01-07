@@ -26,7 +26,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     BpmControls bpmControls;
     Staffs staffs;
     Presets presets;
-    JPanel center, btmProperties;
+    JPanel btmProperties;
     FileMenu menuBar;
     Metronome metronome;
     JScrollPane scrollPane = new JScrollPane();
