@@ -97,8 +97,6 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         this.pack();
         this.setVisible(true);
         this.setFocusable(true); //Allow JPanel to be focused on (to avoid unfocusing for hotkeys)
-
-        metronome.Start();
     }
 
     public void actionPerformed(ActionEvent e) {
