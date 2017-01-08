@@ -26,4 +26,8 @@ class Presets extends JPanel implements ActionListener{
         int newId = ((Preset) e.getSource()).getId();
         this.staffs.ShowById(newId - 1);
     }
+
+    public void setStaffs(Staffs staffs) {
+        this.staffs = staffs;
+    }
 }

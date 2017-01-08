@@ -5,10 +5,21 @@ Author: Kevin Wern                                                              
 
 //Sequencer.java: contains the main window and options, and establishes upper hierarchy of editing window
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
@@ -19,7 +30,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.io.*;
 
-public class Sequencer extends JFrame implements ActionListener,KeyListener,MouseListener {
+public class Sequencer extends JFrame implements ActionListener,KeyListener,MouseListener, XmlSerializable {
 
     public static final int TOTAL_PRESETS = 8;
 
@@ -113,9 +124,13 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
     public void startNew() {
         metronome.Stop();
+        metronome.ClearObservers();
+        metronome.ResetToDefaults();
+
         staffs.Clear();
-        metronome.Update(4, 4, 120, 0.5);
-        metronome.Start();
+        staffs.Initialize();
+        staffs.showDefaultStaff();
+        update(metronome, staffs);
     }
 
     public void showDialog() {   /* Help menu */
@@ -136,68 +151,67 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
     public void saveFile(){
         JFileChooser saveDialog = new JFileChooser();
-        saveDialog.addChoosableFileFilter(new FileNameExtensionFilter("drm","drm"));
+        FileNameExtensionFilter ff = new FileNameExtensionFilter("DRM-SEQ files","drm");
+        saveDialog.addChoosableFileFilter(ff);
+        saveDialog.setFileFilter(ff);
         int result=saveDialog.showSaveDialog(this);
         if(result == JFileChooser.APPROVE_OPTION) {
-            writeFile(saveDialog.getSelectedFile());
+            try {
+                writeFile(saveDialog.getSelectedFile());
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Could not write file.",
+                        "File error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
-    public void writeFile(File f) {
+    public void writeFile(File f) throws FileNotFoundException, ParserConfigurationException, TransformerException {
         FileOutputStream fos;
-        try {
-            fos = new FileOutputStream(f);
-        } catch (FileNotFoundException e) {
-            System.out.println(e);
-            return;
-        }
+        fos = new FileOutputStream(f);
 
-        try {
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            for (Staff staff : staffs.staffList) {
-                oos.writeObject(staff);
-            }
-        } catch (IOException e) {
-                System.out.println(e);
-                return;
-        }
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        Element element = null;
+        DocumentBuilder builder = builderFactory.newDocumentBuilder();
+        Document document = builder.newDocument();
+        element = toXmlElement(document);
+        document.appendChild(element);
+        Transformer tr = TransformerFactory.newInstance().newTransformer();
+        tr.setOutputProperty(OutputKeys.INDENT, "yes");
+        tr.setOutputProperty(OutputKeys.METHOD, "xml");
+        tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+         // send DOM to file
+        tr.transform(new DOMSource(document), new StreamResult(fos));
     }
 
 
     public void openFile(){
         JFileChooser openDialog = new JFileChooser();
-        openDialog.addChoosableFileFilter(new FileNameExtensionFilter("drm","drm"));
+        FileNameExtensionFilter ff = new FileNameExtensionFilter("DRM-SEQ files","drm");
+        openDialog.addChoosableFileFilter(ff);
+        openDialog.setFileFilter(ff);
         int result = openDialog.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
-            readFile(openDialog.getSelectedFile());
+            try {
+                readFile(openDialog.getSelectedFile());
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Could not open file.",
+                        "File error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
-    public void readFile(File f) {
-        staffs.Clear();
-        int i = 0;
-        try {
-            FileInputStream fis = new FileInputStream(f);
-            ObjectInputStream oos = new ObjectInputStream(fis);
-            while (true) {
-                Staff nextStaff = (Staff) oos.readObject();
-                if (nextStaff == null)
-                    break;
-                else {
-                    staffs.staffList.set(i, nextStaff);
-                    staffs.add(nextStaff, Integer.toString(i));
-                    metronome.RegisterObserver(nextStaff);
-                    System.out.println(i);
-                    i++;
-                }
-            }
-        } catch (IOException e) {
-            System.out.println(e);
-        } catch (ClassNotFoundException e) {
-            System.out.println(e);
-        }
-        staffs.revalidate();
-        staffs.repaint();
+    public void readFile(File file) throws IOException, ParserConfigurationException, SAXException {
+        FileInputStream fis = new FileInputStream(file);
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document dom = db.parse(fis);
+        Node result = dom.getDocumentElement();
+        Element element = (Element) result;
+        fromXmlElement(element);
     }
 
     public void keyPressed(KeyEvent ke) {  /* Hotkeys */
@@ -207,6 +221,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
                 metronome.Stop();
                 staffs.ResetCurrent();
                 metronome.Reset();
+                metronome.Start();
                 break;
 
             case KeyEvent.VK_8:    /* 1-8: select bank */
@@ -246,7 +261,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
             if(e.getClickCount() == 2) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath.getPathComponent(selPath.getPathCount() - 1);
                 File soundFile = (File) node.getUserObject();
-                staffs.GetCurrentShowing().addSound(soundFile.getAbsolutePath(), metronome.GetClicksPerCycle());
+                staffs.GetCurrentShowing().addSound(soundFile.getPath(), metronome.GetClicksPerCycle());
             }
         }
         requestFocus();
@@ -266,5 +281,41 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
 
     public void mouseClicked(MouseEvent e) {
 
+    }
+
+    public void update(Metronome metronome, Staffs staffs) {
+
+        if (this.staffs != staffs) {
+            this.staffs.removeAll();
+            this.remove(this.scrollPane);
+            this.scrollPane = new JScrollPane();
+            this.staffs = staffs;
+            scrollPane.setViewportView(staffs);
+            staffs.showDefaultStaff();
+            presets.setStaffs(staffs);
+            this.add(scrollPane, BorderLayout.CENTER);
+        }
+
+        this.remove(bpmControls);
+        this.bpmControls = new BpmControls(metronome, staffs);
+        this.add(bpmControls, BorderLayout.NORTH);
+        bpmControls.Update();
+    }
+
+    @Override
+    public Element toXmlElement(Document document) {
+        Element element = null;
+        element = document.createElement("settings");
+        element.appendChild(staffs.toXmlElement(document));
+        element.appendChild(metronome.toXmlElement(document));
+        return element;
+    }
+
+    public void fromXmlElement(Element element) {
+        Element bpmControlsElement = (Element) element.getElementsByTagName("bpmcontrols").item(0);
+        Metronome newMetronome = Metronome.fromXmlElement(this.metronome, bpmControlsElement);
+        Element staffsElement = (Element) element.getElementsByTagName("staffs").item(0);
+        Staffs newStaffs = Staffs.fromXmlElement(staffsElement, this.metronome);
+        update(newMetronome, newStaffs);
     }
 }

@@ -96,6 +96,10 @@ public class Metronome implements ActionListener, XmlSerializable {
         }
     }
 
+    public void ResetToDefaults() {
+        Update(INITIAL_BEAT_COUNT, INITIAL_BASIC_DURATION, INITIAL_BPM, INITIAL_SWING_FACTOR);
+    }
+
     public void Update(int beatCount, int basicDuration, int beatsPerMinute,
             double swingFactor) {
         if (beatCount > MAX_BEAT_COUNT || beatCount < MIN_BEAT_COUNT) {
@@ -154,7 +158,6 @@ public class Metronome implements ActionListener, XmlSerializable {
         timer.stop();
         timer.reset();
         currentClick = INITIAL_CLICK;
-        timer.start();
     }
 
     private TimerIntervalGroup CalculateIntervals() {
