@@ -95,7 +95,7 @@ public class Metronome implements ActionListener, Serializable {
                     basicDuration));
         }
         if (beatsPerMinute > MAX_BPM || beatsPerMinute < MIN_BPM) {
-            throw new IllegalArgumentException(String.format("beatsPerMinute must be in range [1,255]. Got %d",
+            throw new IllegalArgumentException(String.format("beatsPerMinute must be in range [1,240]. Got %d",
                    beatsPerMinute));
         }
         if (swingFactor > MAX_SWING_FACTOR || swingFactor < MIN_SWING_FACTOR) {
