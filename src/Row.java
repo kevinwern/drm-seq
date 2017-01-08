@@ -23,57 +23,54 @@ public class Row extends JPanel implements ActionListener, XmlSerializable {
         file = filename;
         this.parent = parent;
         cells = new LinkedList<Cell>();
-        for (int i = 0; i<length; i++){
+        for (int i = 0; i < length; i++) {
             cells.add(new Cell());
         }
 
         numCells = length;
         sound = new Sound(filename);
         String[] strFragments = filename.split("/");
-        JLabel tag = new JLabel(strFragments[strFragments.length-1],JLabel.CENTER);
-        tag.setPreferredSize(new Dimension(100,10));
+        JLabel tag = new JLabel(strFragments[strFragments.length - 1], JLabel.CENTER);
+        tag.setPreferredSize(new Dimension(100, 10));
         muteButton = new JButton("M");
-        muteButton.setPreferredSize(new Dimension(15,15));
+        muteButton.setPreferredSize(new Dimension(15, 15));
         muteButton.setFocusable(false);
         muteButton.addActionListener(this);
         soloButton = new JButton("S");
-        soloButton.setPreferredSize(new Dimension(15,15));
+        soloButton.setPreferredSize(new Dimension(15, 15));
         soloButton.setFocusable(false);
         soloButton.addActionListener(this);
 
         this.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
-        this.setMinimumSize(new Dimension(400,20));
+        this.setMinimumSize(new Dimension(400, 20));
         this.add(soloButton);
         this.add(muteButton);
         this.add(tag);
-        for (int i = 0; i<length; i++){
+        for (int i = 0; i < length; i++) {
             this.add(cells.get(i));
         }
     }
 
     public void setLength(int length) {
-        if (length>numCells){
-            for (int i = numCells; i<length; i++){
+        if (length > numCells) {
+            for (int i = numCells; i < length; i++) {
                 if (i < cells.size()) {
                     cells.get(i).activate();
-                }
-                else {
+                } else {
                     Cell addCell = new Cell();
                     this.add(addCell);
                     cells.add(addCell);
                 }
             }
-        }
-        else if (length<numCells) {
+        } else if (length < numCells) {
             boolean activeDataExists = false;
-            for (int i=cells.size() - 1;i >= length; i--){
+            for (int i = cells.size() - 1; i >= length; i--) {
                 if (cells.get(i).isLit()) {
                     activeDataExists = true;
                 }
                 if (activeDataExists) {
                     cells.get(i).deactivate();
-                }
-                else {
+                } else {
                     this.remove(cells.get(i));
                     cells.remove(i);
                 }
@@ -84,11 +81,11 @@ public class Row extends JPanel implements ActionListener, XmlSerializable {
         numCells = length;
     }
 
-    public int getLength(){
+    public int getLength() {
         return numCells;
     }
 
-    public void light(int index){
+    public void light(int index) {
         if (index >= cells.size()) {
             return;
         }
@@ -96,11 +93,11 @@ public class Row extends JPanel implements ActionListener, XmlSerializable {
         if (litCell >= 0) {
             cells.get(litCell).reset();
         }
-        litCell = index;;
+        litCell = index;
     }
 
-    void reset(){
-        for (int i = 0; i<numCells; i++)
+    void reset() {
+        for (int i = 0; i < numCells; i++)
             cells.get(i).reset();
         litCell = -1;
     }
@@ -110,31 +107,29 @@ public class Row extends JPanel implements ActionListener, XmlSerializable {
             sound.play();
     }
 
-    public void toggleMute(){
+    public void toggleMute() {
         isMuted = !isMuted;
-        if (isMuted){
+        if (isMuted) {
             parent.addMutedTrack(this);
             muteButton.setForeground(Color.RED);
-        }
-        else{
+        } else {
             parent.removeMutedTrack(this);
             muteButton.setForeground(Color.BLACK);
         }
     }
 
-    public void toggleSolo(){
+    public void toggleSolo() {
         isSoloed = !isSoloed;
         if (isSoloed) {
             parent.addSoloTrack(this);
             soloButton.setForeground(Color.YELLOW);
-        }
-        else {
+        } else {
             parent.removeSoloTrack(this);
             soloButton.setForeground(Color.BLACK);
         }
     }
 
-    public void actionPerformed(ActionEvent e){
+    public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(muteButton)) {
             toggleMute();
         }
@@ -142,11 +137,11 @@ public class Row extends JPanel implements ActionListener, XmlSerializable {
             toggleSolo();
     }
 
-    public boolean isMuted(){
+    public boolean isMuted() {
         return isMuted;
     }
 
-    public boolean isSoloed(){
+    public boolean isSoloed() {
         return isSoloed;
     }
 
