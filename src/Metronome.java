@@ -5,14 +5,15 @@
 // Components will update this class's attributes and listen to the
 // resulting pulse.
 
-import javax.swing.Timer;
-import java.io.Serializable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.IllegalArgumentException;
 
-public class Metronome implements ActionListener, Serializable {
+public class Metronome implements ActionListener, XmlSerializable {
     public static final int  MAX_BPM = 240;
     public static final int  MIN_BPM = 30;
     public static final int  MAX_BEAT_COUNT = 12;
@@ -50,6 +51,17 @@ public class Metronome implements ActionListener, Serializable {
         basicDuration = INITIAL_BASIC_DURATION;
         beatsPerMinute = INITIAL_BPM;
         swingFactor = INITIAL_SWING_FACTOR;
+        currentClick = INITIAL_CLICK;
+        clickIntervals = CalculateIntervals();
+        clicksPerCycle = CalculateClicksPerCycle();
+        timer = new MultiIntervalTimer(clickIntervals.GetIntervals(), this);
+    }
+
+    public Metronome(int beatCount, int basicDuration, int beatsPerMinute, double swingFactor) {
+        this.beatCount = beatCount;
+        this.basicDuration = basicDuration;
+        this.beatsPerMinute = beatsPerMinute;
+        this.swingFactor = swingFactor;
         currentClick = INITIAL_CLICK;
         clickIntervals = CalculateIntervals();
         clicksPerCycle = CalculateClicksPerCycle();
@@ -126,6 +138,10 @@ public class Metronome implements ActionListener, Serializable {
         }
     }
 
+    public void ClearObservers() {
+        registeredObservers.clear();
+    }
+
     public void Start() {
         timer.start();
     }
@@ -176,7 +192,7 @@ public class Metronome implements ActionListener, Serializable {
     }
 
     // Represents the alternating intervals, taking swing factor into account.
-    private class TimerIntervalGroup implements Serializable {
+    private class TimerIntervalGroup {
         int intervalOnBeat;
         int intervalOffBeat;
 
@@ -186,5 +202,28 @@ public class Metronome implements ActionListener, Serializable {
         }
 
         int[] GetIntervals() { return new int[] {intervalOnBeat, intervalOffBeat}; }
+    }
+
+    public static Metronome fromXmlElement(Metronome metronome, Element element) {
+        metronome.Stop();
+        metronome.Reset();
+        metronome.ClearObservers();
+        int beatCount = Integer.parseInt(element.getAttribute("beat-count"));
+        int basicDuration = Integer.parseInt(element.getAttribute("basic-duration"));
+        int beatsPerMinute = Integer.parseInt(element.getAttribute("bpm"));
+        double swingFactor = Double.parseDouble(element.getAttribute("swing-factor"));
+        metronome.Update(beatCount, basicDuration, beatsPerMinute, swingFactor);
+        return metronome;
+    }
+
+    @Override
+    public Element toXmlElement(Document document) {
+        Element element = null;
+        element = document.createElement("bpmcontrols");
+        element.setAttribute("bpm", Integer.toString(beatsPerMinute));
+        element.setAttribute("beat-count", Integer.toString(beatCount));
+        element.setAttribute("basic-duration", Integer.toString(basicDuration));
+        element.setAttribute("swing-factor", Double.toString(swingFactor));
+        return element;
     }
 }

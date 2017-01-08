@@ -1,17 +1,19 @@
 
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.util.Set;
 
-class Staff extends JPanel implements MouseListener, MetronomeListener, Serializable {
+class Staff extends JPanel implements MouseListener, MetronomeListener, XmlSerializable {
 
     LinkedList<Row> rowList;
     Set<Row> soloRows = new HashSet<Row>();
@@ -73,7 +75,21 @@ class Staff extends JPanel implements MouseListener, MetronomeListener, Serializ
     }   
 
     public void addSound(String fn,int length){
+        Row row = new Row(fn, length, this);
         rowList.add(new Row(fn, length, this));
+        JPanel pane = new JPanel();
+        pane.setBackground(Color.gray);
+        pane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+        pane.setMinimumSize(new Dimension(400,25));
+        pane.add(rowList.get(rowList.size()-1));
+        this.add(pane);
+        rowList.get(rowList.size()-1).addMouseListener(this);
+        this.revalidate();
+        this.repaint();
+    }
+
+    public void addRow(Row row) {
+        rowList.add(row);
         JPanel pane = new JPanel();
         pane.setBackground(Color.gray);
         pane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
@@ -96,6 +112,13 @@ class Staff extends JPanel implements MouseListener, MetronomeListener, Serializ
             return rowList.get(0).getLength();
         else
             return 0;
+    }
+
+    public void Clear() {
+        this.removeAll();
+        soloRows.clear();
+        mutedRows.clear();
+        rowList.clear();
     }
 
     public void trigger(int clickCount) {
@@ -122,5 +145,27 @@ class Staff extends JPanel implements MouseListener, MetronomeListener, Serializ
 
     public void removeMutedTrack(Row row) {
         mutedRows.remove(row);
+    }
+
+    @Override
+    public Element toXmlElement(Document document) {
+        Element element = null;
+        element = document.createElement("staff");
+        for (Row r : rowList) {
+            element.appendChild(r.toXmlElement(document));
+        }
+        return element;
+    }
+
+    public static Staff fromXmlElement(Element element, Metronome metronome) {
+        Staff staff = new Staff(metronome);
+
+        NodeList rowNodes = element.getElementsByTagName("row");
+        for (int i = 0; i < rowNodes.getLength(); i++) {
+            Row newRow = Row.fromXmlElement((Element) rowNodes.item(i), metronome.GetClicksPerCycle(), staff);
+            staff.addRow(newRow);
+        }
+
+        return staff;
     }
 }

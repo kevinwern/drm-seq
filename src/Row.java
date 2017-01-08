@@ -1,13 +1,14 @@
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.LinkedList;
 
-public class Row extends JPanel implements ActionListener, Serializable {
+public class Row extends JPanel implements ActionListener, XmlSerializable {
     LinkedList<Cell> cells;
     int numCells;
     int litCell = -1;
@@ -149,10 +150,40 @@ public class Row extends JPanel implements ActionListener, Serializable {
         return isSoloed;
     }
 
-    private void readObject(ObjectInputStream inputStream)
-            throws IOException, ClassNotFoundException
-    {
-        inputStream.defaultReadObject();
-        this.sound = new Sound(file);
+    @Override
+    public Element toXmlElement(Document document) {
+        Element element = null;
+        element = document.createElement("row");
+        for (int i = 0; i < cells.size(); i++) {
+            Element cellElement = document.createElement("cell");
+            if (cells.get(i).isLit()) {
+                cellElement.appendChild(document.createTextNode(Integer.toString(i)));
+                element.appendChild(cellElement);
+            }
+        }
+        element.setAttribute("sound", file);
+        if (isMuted)
+            element.setAttribute("mute", "true");
+        if (isSoloed)
+            element.setAttribute("solo", "true");
+        return element;
+    }
+
+    public static Row fromXmlElement(Element element, int length, Staff parent) {
+        NodeList nodeList = element.getElementsByTagName("cell");
+        String fileName = element.getAttribute("sound");
+        boolean muted = element.getAttribute("mute").compareTo("true") == 0;
+        boolean soloed = element.getAttribute("solo").compareTo("true") == 0;
+        Row row = new Row(fileName, length, parent);
+
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            int cellLit = Integer.parseInt(nodeList.item(i).getTextContent());
+            row.cells.get(cellLit).toggleLight();
+        }
+        if (muted)
+            row.toggleMute();
+        if (soloed)
+            row.toggleSolo();
+        return row;
     }
 }
