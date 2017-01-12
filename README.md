@@ -1,6 +1,8 @@
 
 # DRM-SEQ
 
+![Screenshot](examples/v1.png?raw=true "Example input")
+
 Drum Machine/sampler created with Java and C++. Originally a project for
 my off time, the goal is to eventually integrate this with input so a
 person can map audio input (i.e. beatboxing) to real samples, and
