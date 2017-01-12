@@ -1,7 +1,6 @@
-
 # DRM-SEQ
 
-![Screenshot](examples/v1.png?raw=true "Example input")
+![Screenshot](examples/v1.png?raw=true "Screen Shot")
 
 Drum Machine/sampler created with Java and C++. Originally a project for
 my off time, the goal is to eventually integrate this with input so a
@@ -73,26 +72,32 @@ This done by default in `gradle build`. To clean the helpers, run:
 
 ## Usage
 
-### Controls
+Create a row by selecting a sound in the file tree. Click any of the cells to play the sound at that point.
 
-Create a row by selecting a sound using the drop down menu. ("Load Sound" button)
-Click any of the cells to insert an instance of the sound there. Universally, you control:
+You have 8 banks, which you can populate with sounds. Click the bank you want to show. Select a bank for play by pressing the corresponding number key.
 
-BPM: beats per minute
+The click is universal, meaning that the position does not change when switching between banks. This is intentional, to make transitioning between loops easier.
 
-Time Signature: feeling of the beat/beats per measure
+For all banks, you control the following parameters:
 
-Groove: the "swing factor" of the notes. Above 50% gives more time to notes on
-        the beat; below 50% gives more time to notes off the beat.
+Parameter| Possible Values |Description
+---|---|---
+BPM | [1,240] |Beats per minute
+Time Signature | [1,12]/(4\|8)|The number of beats per measure (beat count), and the subdivision (value of each beat).
+Groove | [0,100] |The "swing factor" of the notes. Above 50% gives more time to notes on the beat; below 50% gives more time to notes off the beat.
 
-### Misc features
+For each row:
 
-Solo/mute: If soloed, the part plays only by itself or with other soloed parts.
-    Muted is self explanatory.
+Button | Action
+---|---
+Mute | Don't play row.
+Solo | Mute all other unsoloed tracks.
 
-Deleting rows: right-click on a row to delete it
+Additional hotkeys:
 
-Adding sounds of your own: add your wav files to the "Samples" folder.
-
-Beatmatching: Space to cue the track to the beginning, +/- keys (or the arrow buttons)
-    to change the BPM
+Key | Action
+---|---
+Right click | Delete row.
+Space | Play from beginning.
++/- | Change the BPM.
+[1-8] | Select bank for play.
