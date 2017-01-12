@@ -1,8 +1,6 @@
 
 # DRM-SEQ
 
-(NOTE: currently being reworked for Mac compatibility).
-
 Drum Machine/sampler created with Java and C++. Originally a project for
 my off time, the goal is to eventually integrate this with input so a
 person can map audio input (i.e. beatboxing) to real samples, and
@@ -46,29 +44,30 @@ Build this project using gradle:
 
 Compilation:
 
-$ gradle build (if configuration fails, it is likely related to an error
-  with the above)
+    gradle build
+
+(if configuration fails, it is likely related to an error with the above)
 
 Execution:
 
-$ gradle jar
+    gradle jar
 
-$ java -jar drm-seq.jar
+    java -jar drm-seq.jar
 
 Clean:
 
-$ gradle clean
+     gradle clean
 
 ### C++ Helpers
 
 The library helpers are located in libs/soundhelpers. To attempt to build only
 the helpers, you can run something like:
 
-$ cd libs/soundhelpers && ./configure && make
+    cd libs/soundhelpers && ./configure && make
 
 This done by default in `gradle build`. To clean the helpers, run:
 
-$ make clean
+    make clean
 
 ## Usage
 
