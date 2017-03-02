@@ -29,6 +29,7 @@ class FileMenu extends JMenuBar {
         open.addActionListener(al);
         help.addActionListener(al);
         save.addActionListener(al);
+        about.addActionListener(al);
         newFile.addActionListener(al);
     }
 }
