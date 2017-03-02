@@ -10,6 +10,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -20,7 +21,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -40,7 +40,7 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     JPanel btmProperties;
     FileMenu menuBar;
     Metronome metronome;
-    JScrollPane scrollPane = new JScrollPane();
+    JScrollPane scrollPane;
     FileTree tree;
 
     public Sequencer() {  //Default constructor
@@ -48,61 +48,23 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
     }
 
     public void Initialize() {
-        metronome = new Metronome();
-        staffs = new Staffs(metronome, TOTAL_PRESETS, 0);
-        bpmControls = new BpmControls(this.metronome, this.staffs);
-        presets = new Presets(staffs, TOTAL_PRESETS);
-
-        ImageButton playButton = new ImageButton("Images/play.png");   //play, pause, and stop buttons
-        playButton.setPreferredSize(new Dimension(20, 20));
-        playButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent E) {
-                metronome.Start();
-            }
-        });
-
-        ImageButton pauseButton = new ImageButton("Images/pause.png");
-        pauseButton.setPreferredSize(new Dimension(20, 20));
-        pauseButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent E) {
-                metronome.Stop();
-            }
-        });
-
-
-        ImageButton stopButton = new ImageButton("Images/stop.png");
-        stopButton.setPreferredSize(new Dimension(20, 20));
-        stopButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent E) {
-                metronome.Stop();
-                staffs.ResetCurrent();
-            }
-        });
-
-        File sampleFile = new File("Samples");    /* Samples Folder (located in %CHOSEN_DIRECTORY%/Samples) */
 
         menuBar = new FileMenu();
         menuBar.addActionListener(this);
-
-        btmProperties = new JPanel();
-        btmProperties.add(playButton);
-        btmProperties.add(pauseButton);
-        btmProperties.add(stopButton);
-
-        tree = new FileTree(sampleFile);
-        tree.addMouseListener(this);
+        this.setJMenuBar(menuBar);
+        metronome = new Metronome();
 
         this.addKeyListener(this);
         this.addMouseListener(this);
-        this.setJMenuBar(menuBar);
         this.setTitle("DRM SEQ");
         this.setLayout(new BorderLayout());
-        scrollPane.setViewportView(staffs);
-        this.add(scrollPane, BorderLayout.CENTER);
-        this.add(bpmControls, BorderLayout.NORTH);
-        this.add(btmProperties, BorderLayout.SOUTH);
-        this.add(tree, BorderLayout.WEST);
-        this.add(presets, BorderLayout.EAST);
+
+        createAndSetupFileTree();
+        createAndSetupStaffs();
+        createAndSetupPresets();
+        createAndSetupBpmControls();
+        createAndSetupTransport();
+
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.pack();
@@ -122,6 +84,63 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         }
     }
 
+    public void createAndSetupTransport() {
+        ImageButton playButton = new ImageButton("Images/play.png");   //play, pause, and stop buttons
+        playButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent E) {
+                metronome.Start();
+            }
+        });
+
+        ImageButton pauseButton = new ImageButton("Images/pause.png");
+        pauseButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent E) {
+                metronome.Stop();
+            }
+        });
+
+
+        ImageButton stopButton = new ImageButton("Images/stop.png");
+        stopButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent E) {
+                metronome.Stop();
+                metronome.Reset();
+                staffs.ResetCurrent();
+            }
+        });
+
+        btmProperties = new JPanel();
+        btmProperties.add(playButton);
+        btmProperties.add(pauseButton);
+        btmProperties.add(stopButton);
+
+        this.add(btmProperties, BorderLayout.SOUTH);
+    }
+
+    public void createAndSetupBpmControls() {
+        bpmControls = new BpmControls(this.metronome, this.staffs);
+        this.add(bpmControls, BorderLayout.NORTH);
+    }
+
+    public void createAndSetupFileTree() {
+        File sampleFile = new File("Samples");    /* Samples Folder (located in %CHOSEN_DIRECTORY%/Samples) */
+        tree = new FileTree(sampleFile);
+        tree.addMouseListener(this);
+        this.add(tree, BorderLayout.WEST);
+    }
+
+    public void createAndSetupStaffs() {
+        staffs = new Staffs(metronome, TOTAL_PRESETS, 0);
+        scrollPane = new JScrollPane();
+        scrollPane.setViewportView(staffs);
+        this.add(scrollPane, BorderLayout.CENTER);
+    }
+
+    public void createAndSetupPresets() {
+        presets = new Presets(staffs, TOTAL_PRESETS);
+        this.add(presets, BorderLayout.EAST);
+    }
+
     public void startNew() {
         metronome.Stop();
         metronome.ClearObservers();
@@ -133,6 +152,8 @@ public class Sequencer extends JFrame implements ActionListener,KeyListener,Mous
         update(metronome, staffs);
     }
 
+
+    // TODO: make this less garbagey by actually having some modular display, not a hard-coded string
     public void showDialog() {   /* Help menu */
         JOptionPane.showMessageDialog(this,
                 "Created January and July 2013\n\n" +
